@@ -1,0 +1,11 @@
+# Arquivos gerados pelo compilador GHDL
+*.cf
+*.o
+
+# Arquivos de formas de onda
+*.vcd
+*.ghw
+
+# Diretórios de compilação genéricos
+build/
+work/
