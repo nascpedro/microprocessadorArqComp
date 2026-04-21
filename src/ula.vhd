@@ -12,13 +12,16 @@ end entity;
 
 architecture a_ula of ula is
 
+	
+	signal s_mult_32 : unsigned(31 downto 0); --sinal para guardar uma multiplicação(32bits)
     signal s_soma, s_subt, s_mult, s_and       : unsigned(15 downto 0);
     signal s_resultado_final                   : unsigned(15 downto 0);
 
 begin
     s_soma <= entr0 + entr1;
     s_subt <= entr0 - entr1;
-    s_mult <= entr0 * entr1; 
+    s_mult_32 <= entr0 * entr1;
+    s_mult <= s_mult_32(15 downto 0);--slicing para os 15 LSB
     s_and  <= entr0 and entr1; 
 
     s_resultado_final <= s_soma  when sel_operacao = "00"  else
