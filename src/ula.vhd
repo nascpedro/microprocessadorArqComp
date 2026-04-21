@@ -4,38 +4,33 @@ use ieee.numeric_std.all;
 
 entity ula is
    port (   entr0, entr1                         :  in  unsigned(15 downto 0);
-            sel_operacao                         :  in unsigned (1 downto 0);
+            sel_operacao                         :  in  unsigned (1 downto 0);
             saida                                :  out unsigned(15 downto 0);
             flag_N, flag_C, flag_Z, flag_V       :  out std_logic
     );
 end entity;
 
 architecture a_ula of ula is
-    component aritmetica is
-        port (in_0, in_1          :  in  unsigned(15 downto 0);
-              soma,subt,mult,exp  :  out unsigned(15 downto 0)
-        );
-    end component;
-    component mux4x1_16bits is
-        port (   in0_mux, in1_mux, in2_mux, in3_mux          :  in  unsigned(15 downto 0);
-                 sel                                         :  in  unsigned(1 downto 0);
-                 out_mux                                     :  out unsigned(15 downto 0)
-        );
-    end component;
 
-    signal s_soma, s_subt, s_mult, s_exp       : unsigned(15 downto 0);
+    signal s_soma, s_subt, s_mult, s_and       : unsigned(15 downto 0);
     signal s_resultado_final                   : unsigned(15 downto 0);
-begin
-    aritmetica1 : aritmetica port map ( in_0 => entr0, in_1 => entr1, soma => s_soma, subt => s_subt, mult => s_mult,
-                                        exp  => s_exp
-                                      );
 
-    mux1 : mux port map ( in0_mux => s_soma, in1_mux => s_subt, in2_mux => s_mult, in3_mux => s_exp, sel => sel_operacao,
-                          out_mux => s_resultado_final 
-                        );
+begin
+    s_soma <= entr0 + entr1;
+    s_subt <= entr0 - entr1;
+    s_mult <= entr0 * entr1; 
+    s_and  <= entr0 and entr1; 
+
+    s_resultado_final <= s_soma  when sel_operacao = "00"  else
+                         s_subt  when sel_operacao = "01"  else
+                         s_mult  when sel_operacao = "10"  else
+                         s_and   when sel_operacao = "11"  else
+                         "0000000000000000";
 
     saida <= s_resultado_final;
     
+    flag_N <= s_resultado_final(15);
+
     flag_Z <= '1' when (s_resultado_final = "0000000000000000")
                   else '0';
 
