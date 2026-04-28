@@ -1,0 +1,41 @@
+[*]
+[*] GTKWave Analyzer v3.3.125 (w)1999-2025 BSI
+[*] Tue Apr 28 23:34:42 2026
+[*]
+[dumpfile] "/home/nicolas/arqcomp/uProcessador/microprocessadorArqComp/src/banco_teste.ghw"
+[dumpfile_mtime] "Tue Apr 28 23:23:38 2026"
+[dumpfile_size] 6965
+[savefile] "/home/nicolas/arqcomp/uProcessador/microprocessadorArqComp/src/visualizacao_teste_banco.gtwk.gtkw"
+[timestart] 0
+[size] 1854 1001
+[pos] -27 -24
+*-29.491360 1018000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.bancoregs16bits_tb.
+[treeopen] top.bancoregs16bits_tb.uut.
+[sst_width] 278
+[signals_width] 212
+[sst_expanded] 1
+[sst_vpaned_height] 297
+@28
+top.bancoregs16bits_tb.uut.we_reg6
+top.bancoregs16bits_tb.uut.we_reg5
+top.bancoregs16bits_tb.uut.we_reg4
+top.bancoregs16bits_tb.uut.we_reg3
+top.bancoregs16bits_tb.uut.we_reg2
+top.bancoregs16bits_tb.uut.we_reg1
+top.bancoregs16bits_tb.uut.we_reg0
+top.bancoregs16bits_tb.uut.wr_en
+top.bancoregs16bits_tb.uut.rst
+top.bancoregs16bits_tb.uut.clk
+@22
+#{top.bancoregs16bits_tb.uut.data_r1[15:0]} top.bancoregs16bits_tb.uut.data_r1[15] top.bancoregs16bits_tb.uut.data_r1[14] top.bancoregs16bits_tb.uut.data_r1[13] top.bancoregs16bits_tb.uut.data_r1[12] top.bancoregs16bits_tb.uut.data_r1[11] top.bancoregs16bits_tb.uut.data_r1[10] top.bancoregs16bits_tb.uut.data_r1[9] top.bancoregs16bits_tb.uut.data_r1[8] top.bancoregs16bits_tb.uut.data_r1[7] top.bancoregs16bits_tb.uut.data_r1[6] top.bancoregs16bits_tb.uut.data_r1[5] top.bancoregs16bits_tb.uut.data_r1[4] top.bancoregs16bits_tb.uut.data_r1[3] top.bancoregs16bits_tb.uut.data_r1[2] top.bancoregs16bits_tb.uut.data_r1[1] top.bancoregs16bits_tb.uut.data_r1[0]
+@28
+#{top.bancoregs16bits_tb.uut.reg_r1[2:0]} top.bancoregs16bits_tb.uut.reg_r1[2] top.bancoregs16bits_tb.uut.reg_r1[1] top.bancoregs16bits_tb.uut.reg_r1[0]
+@22
+#{top.bancoregs16bits_tb.uut.output_reg0[15:0]} top.bancoregs16bits_tb.uut.output_reg0[15] top.bancoregs16bits_tb.uut.output_reg0[14] top.bancoregs16bits_tb.uut.output_reg0[13] top.bancoregs16bits_tb.uut.output_reg0[12] top.bancoregs16bits_tb.uut.output_reg0[11] top.bancoregs16bits_tb.uut.output_reg0[10] top.bancoregs16bits_tb.uut.output_reg0[9] top.bancoregs16bits_tb.uut.output_reg0[8] top.bancoregs16bits_tb.uut.output_reg0[7] top.bancoregs16bits_tb.uut.output_reg0[6] top.bancoregs16bits_tb.uut.output_reg0[5] top.bancoregs16bits_tb.uut.output_reg0[4] top.bancoregs16bits_tb.uut.output_reg0[3] top.bancoregs16bits_tb.uut.output_reg0[2] top.bancoregs16bits_tb.uut.output_reg0[1] top.bancoregs16bits_tb.uut.output_reg0[0]
+#{top.bancoregs16bits_tb.uut.output_reg1[15:0]} top.bancoregs16bits_tb.uut.output_reg1[15] top.bancoregs16bits_tb.uut.output_reg1[14] top.bancoregs16bits_tb.uut.output_reg1[13] top.bancoregs16bits_tb.uut.output_reg1[12] top.bancoregs16bits_tb.uut.output_reg1[11] top.bancoregs16bits_tb.uut.output_reg1[10] top.bancoregs16bits_tb.uut.output_reg1[9] top.bancoregs16bits_tb.uut.output_reg1[8] top.bancoregs16bits_tb.uut.output_reg1[7] top.bancoregs16bits_tb.uut.output_reg1[6] top.bancoregs16bits_tb.uut.output_reg1[5] top.bancoregs16bits_tb.uut.output_reg1[4] top.bancoregs16bits_tb.uut.output_reg1[3] top.bancoregs16bits_tb.uut.output_reg1[2] top.bancoregs16bits_tb.uut.output_reg1[1] top.bancoregs16bits_tb.uut.output_reg1[0]
+#{top.bancoregs16bits_tb.uut.output_reg2[15:0]} top.bancoregs16bits_tb.uut.output_reg2[15] top.bancoregs16bits_tb.uut.output_reg2[14] top.bancoregs16bits_tb.uut.output_reg2[13] top.bancoregs16bits_tb.uut.output_reg2[12] top.bancoregs16bits_tb.uut.output_reg2[11] top.bancoregs16bits_tb.uut.output_reg2[10] top.bancoregs16bits_tb.uut.output_reg2[9] top.bancoregs16bits_tb.uut.output_reg2[8] top.bancoregs16bits_tb.uut.output_reg2[7] top.bancoregs16bits_tb.uut.output_reg2[6] top.bancoregs16bits_tb.uut.output_reg2[5] top.bancoregs16bits_tb.uut.output_reg2[4] top.bancoregs16bits_tb.uut.output_reg2[3] top.bancoregs16bits_tb.uut.output_reg2[2] top.bancoregs16bits_tb.uut.output_reg2[1] top.bancoregs16bits_tb.uut.output_reg2[0]
+#{top.bancoregs16bits_tb.uut.output_reg6[15:0]} top.bancoregs16bits_tb.uut.output_reg6[15] top.bancoregs16bits_tb.uut.output_reg6[14] top.bancoregs16bits_tb.uut.output_reg6[13] top.bancoregs16bits_tb.uut.output_reg6[12] top.bancoregs16bits_tb.uut.output_reg6[11] top.bancoregs16bits_tb.uut.output_reg6[10] top.bancoregs16bits_tb.uut.output_reg6[9] top.bancoregs16bits_tb.uut.output_reg6[8] top.bancoregs16bits_tb.uut.output_reg6[7] top.bancoregs16bits_tb.uut.output_reg6[6] top.bancoregs16bits_tb.uut.output_reg6[5] top.bancoregs16bits_tb.uut.output_reg6[4] top.bancoregs16bits_tb.uut.output_reg6[3] top.bancoregs16bits_tb.uut.output_reg6[2] top.bancoregs16bits_tb.uut.output_reg6[1] top.bancoregs16bits_tb.uut.output_reg6[0]
+[pattern_trace] 1
+[pattern_trace] 0
