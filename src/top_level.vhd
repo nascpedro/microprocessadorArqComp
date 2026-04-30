@@ -58,7 +58,8 @@ architecture a_top_level of top_level is
     signal s_entr1_ula     : unsigned(15 downto 0);
     signal s_dado_escrita  : unsigned(15 downto 0);
 
-
+    -- Fios para as flags da ula:
+    signal s_flag_N, s_flag_C, s_flag_Z, s_flag_V : std_logic;
 
 begin
     -- MUX 1: O que entra na porta 1 da ULA?
@@ -81,13 +82,13 @@ begin
         data_out => s_saida_acc
     );
 
-    -- ULA
+    --ULA
     ula_inst: ula port map (
         entr0 => s_saida_acc, 
         entr1 => s_entr1_ula, 
         sel_operacao => sel_operacao, 
         saida => s_saida_ula,
-        flag_N => open, flag_C => open, flag_Z => open, flag_V => open -- Colocamos 'open' se não formos usar as flags fora do top level agora
-    ); 
+        flag_N => s_flag_N, flag_C => s_flag_C, flag_Z => s_flag_Z, flag_V => s_flag_V
+    );
 
 end architecture;

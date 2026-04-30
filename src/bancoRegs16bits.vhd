@@ -51,15 +51,14 @@ begin
 
 
       -- Lógica de leitura: seleciona a saída do reg indicado por reg_r1 e nao precisa de outros por usar acumulador
-      with reg_r1 select
-            data_r1 <= output_reg0 when "000",
-                       output_reg1 when "001",
-                       output_reg2 when "010",
-                       output_reg3 when "011",
-                       output_reg4 when "100",
-                       output_reg5 when "101",
-                       output_reg6 when "110",
-                       (others => '0') when others; -- default
+      data_r1 <= output_reg0 when reg_r1 = "000" else
+                 output_reg1 when reg_r1 = "001" else
+                 output_reg2 when reg_r1 = "010" else
+                 output_reg3 when reg_r1 = "011" else
+                 output_reg4 when reg_r1 = "100" else
+                 output_reg5 when reg_r1 = "101" else
+                 output_reg6 when reg_r1 = "110" else
+                 "0000000000000000";
       
 
 end  architecture ; 

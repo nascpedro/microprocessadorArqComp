@@ -38,10 +38,13 @@ begin
                   else '0';
 
     flag_V <= '1' when (sel_operacao = "00" and ((entr0(15) = entr1(15)) and ((entr0(15) xor s_resultado_final(15)) = '1')))
-                  else '0';
+              else
+              '1' when (sel_operacao = "01" and ((entr0(15) /= entr1(15)) and ((entr0(15) xor s_resultado_final(15)) = '1')))
+              else '0';
 
-    flag_C <= '1' when (sel_operacao = "00" and ((entr0(15) and entr1(15)) = '1'
-                        or (not s_resultado_final(15) and (entr0(15) or entr1(15))) = '1'))
-                  else '0';
+    flag_C <= '1' when (sel_operacao = "00" and ((entr0(15) and entr1(15)) = '1' or (not s_resultado_final(15) and (entr0(15) or entr1(15))) = '1'))
+              else
+              '1' when (sel_operacao = "01" and (entr0 < entr1)) 
+              else '0';
 
 end architecture;

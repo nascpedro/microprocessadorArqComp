@@ -22,10 +22,10 @@ architecture a_bancoRegs16bits_tb of bancoRegs16bits_tb is
     signal   finished    : std_logic := '0';
     signal   clk, reset  : std_logic;
     signal   wr_en       : std_logic := '0';
-    signal   data_in     : unsigned(15 downto 0) := (others => '0');
+    signal   data_in     : unsigned(15 downto 0) := "0000000000000000";
     signal   data_out    : unsigned(15 downto 0);
-    signal   reg_wr      : unsigned(2 downto 0) := (others => '0');
-    signal   reg_r1      : unsigned(2 downto 0) := (others => '0');
+    signal   reg_wr      : unsigned(2 downto 0) := "000";
+    signal   reg_r1      : unsigned(2 downto 0) := "000";
 
 begin
 
@@ -35,7 +35,7 @@ begin
                                   data_wr => data_in, 
                                   reg_wr => reg_wr, 
                                   reg_r1 => reg_r1, 
-                                  data_r1   => data_out);  -- aqui vai a instância do seu componente
+                                  data_r1   => data_out);  
     
     reset_global: process
     begin

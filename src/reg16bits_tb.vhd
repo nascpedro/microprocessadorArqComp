@@ -5,9 +5,9 @@ use ieee.numeric_std.all;
 entity reg16bits_tb is
 end entity;
 
-architecture reg16bits_tb of reg16bits_tb is
-    component reg16bits is          -- aqui vai seu componente a testar
-         port( clk      : in std_logic;
+architecture a_reg16bits_tb of reg16bits_tb is
+    component reg16bits is        
+         port(   clk      : in std_logic;
                  rst      : in std_logic;
                  wr_en    : in std_logic;
                  data_in  : in unsigned(15 downto 0);
@@ -15,12 +15,11 @@ architecture reg16bits_tb of reg16bits_tb is
          );
     end component;
 
-                            -- 100 ns é o período que escolhi para o clock
     constant period_time : time      := 100 ns;
     signal   finished    : std_logic := '0';
     signal   clk, reset  : std_logic;
     signal   wr_en       : std_logic := '0';
-    signal   data_in     : unsigned(15 downto 0) := (others => '0');
+    signal   data_in     : unsigned(15 downto 0);
     signal   data_out    : unsigned(15 downto 0);
 
 begin
@@ -29,24 +28,24 @@ begin
                             rst => reset, 
                             wr_en => wr_en, 
                             data_in => data_in, 
-                            data_out => data_out);  -- aqui vai a instância do seu componente
+                            data_out => data_out); 
     
     reset_global: process
     begin
         reset <= '1';
-        wait for period_time*2; -- espera 2 clocks, pra garantir
+        wait for period_time*2;
         reset <= '0';
         wait;
     end process;
     
     sim_time_proc: process
     begin
-        wait for 30 us;         -- <== TEMPO TOTAL DA SIMULAÇÃO!!!
+        wait for 30 us;       
         finished <= '1';
         wait;
     end process sim_time_proc;
     clk_proc: process
-    begin                       -- gera clock até que sim_time_proc termine
+    begin                      
         while finished /= '1' loop
             clk <= '0';
             wait for period_time/2;
@@ -55,7 +54,7 @@ begin
         end loop;
         wait;
     end process clk_proc;
-   process                      -- sinais dos casos de teste (p.ex.)
+   process                     
    begin
       wait for 200 ns;
       wr_en <= '0';
@@ -75,4 +74,4 @@ begin
       wait for 200 ns; 
       wait;                     
    end process;
-end architecture reg16bits_tb;
+end architecture a_reg16bits_tb;
