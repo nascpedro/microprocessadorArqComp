@@ -18,8 +18,7 @@ architecture a_top_level_tb of top_level_tb is
               sel_mux_ula   : in std_logic;
               sel_mux_data  : in std_logic
         );
-    end component;
-
+    end component;  
     
     constant period_time : time := 100 ns; 
     signal finished      : std_logic := '0';
