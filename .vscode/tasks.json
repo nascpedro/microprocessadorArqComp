@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "ghdl elaborate",
+			"command": "ghdl",
+			"args": [
+				"-a",
+				"../src/reg16bits.vhd",
+				"reg16bits_tb.vhd"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/sim"
+			},
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "silent"
+			}
+		}
+	]
+}

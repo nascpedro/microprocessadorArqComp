@@ -15,9 +15,14 @@ ghdl -a src/reg16bits.vhd
 ghdl -a src/bancoRegs16bits.vhd 
 ghdl -a src/top_level.vhd
 ghdl -a src/top_level_tb.vhd 
+ghdl -a src/rom.vhd
+ghdl -a src/uc.vhd
+ghdl -a src/uc_tb.vhd
+
 
 echo "Gerando arquivo de simulação..."
 #EX:ghdl -r porta_tb --wave=porta_tb.ghw
-ghdl -r top_level_tb --wave=top_level_tb.ghw
+ghdl -r uc_tb --wave=uc_tb.ghw
 
-echo "Arquivo top_level_tb.ghw gerado com sucesso."
+echo "Arquivo uc_tb.ghw gerado com sucesso."
+# gtkwave uc_tb.ghw para abrir a onda gerada
