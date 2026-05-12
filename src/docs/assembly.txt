@@ -11,7 +11,7 @@ MOV A, R3;
 # 03: ADD (Acumulador = Acumulador + R4)
 ADD A, R4; 
 # 04:
-MOV R5, A;
+NOP
 
 # PASSO D: Subtrai 1 de R5 e armazena o resultado de volta em R5
 # 05: (A subtração acontece direto no Acumulador que já tinha o valor)
