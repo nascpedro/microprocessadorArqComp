@@ -57,7 +57,8 @@ architecture a_uc of uc is
     
     -- Fatias da intrucao
     signal opcode         : unsigned(3 downto 0);
-    signal extensao_sinal : unsigned(15 downto 0);
+    signal ext_jmp : unsigned(15 downto 0);
+    signal ext_cte : unsigned(15 downto 0);
     
 begin
 
@@ -82,16 +83,21 @@ begin
     sel_reg_wr <= s_instrucao(10 downto 8);
     sel_reg_r1 <= s_instrucao(7 downto 5);
     
-    -- Extensão de sinal 
-    extensao_sinal <= s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & 
-                      s_instrucao(10) & s_instrucao(10 downto 0);
+    -- Extensão para o JMP (11 bits: copia o bit 10 seis vezes)
+    ext_jmp <= s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & 
+               s_instrucao(10) & s_instrucao(10 downto 0);
 
-    constante_out <= extensao_sinal; -- para passar a constante estendida para o top_level
+    -- Extensão para Matemática/Cargas (5 bits: copia o bit 4 doze vezes)
+    ext_cte <= s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & 
+               s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & 
+               s_instrucao(4) & s_instrucao(4 downto 0);
+
+    constante_out <= ext_cte; -- para passar a constante estendida para o top_level
 
     -- Entrada do PC: Se for JMP no estado 1, faz o salto relativo compensando o +1 anterior pq
     -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao vlta 1(-1) e pula o +4
     -- Caso contrário, prepara o PC + 1. ( pela logica do PC+1 gravado entre o primeiro e segundo estado)
-    s_pc_in <= (s_pc_out - 1 + extensao_sinal) when (opcode = "1111" and s_estado = '1') else 
+    s_pc_in <= (s_pc_out - 1 + ext_jmp) when (opcode = "1111" and s_estado = '1') else 
                (s_pc_out + 1);
 
     -- Habilitação de escrita: Grava PC+1 no fim do estado 0 OU o JMP no fim do estado 1
