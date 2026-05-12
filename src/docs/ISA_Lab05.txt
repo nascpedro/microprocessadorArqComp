@@ -1,0 +1,17 @@
+ISA lab5:
+
+	[Opcode: 4 bits] [Destino: 3 bits] [Origem: 3 bits] [Constante: 5 bits]
+        
+     EX: ------1111--------------XXX--------------YYY---------------ZZZZZ------
+     
+    
+TABELA OPCODE: 
+
+-> 0001: LD Rd, cte (Carrega cte. direta no reg. [Rd])
+-> 0010: MOV Rd, Rs (Copia o valor de [Rs] para [Rd])
+-> 0011: MOV A, Rs (Copia o valor de [Rs] para o Acumulador)
+-> 0100: MOV Rd, A (Copia o Acumulador para o reg. [Rd])
+-> 0101: ADD A, Rs (Soma [Rs] com o Acumulador)
+-> 0110: SUBI A, cte (Subtrai a cta. do Acumulador)
+-> 1111: JMP relativo (Jump do Lab 4)
+		
