@@ -2,27 +2,37 @@
 
 # Interrompe o script se ocorrer algum erro
 set -e 
-# No momento, estamos deixando todos os arquivos na pasta source (/src) 
 
 echo "Limpando arquivos de simulação antigos..."
-# Adicionado .ghw na lista de limpeza
 rm -f *.cf *.o *.vcd *.ghw 
 
-echo "Analisando componentes (src/)..."
-#EX: ghdl -a porta.vhd 
+echo "Analisando componentes base (src/)..."
 ghdl -a src/ula.vhd
 ghdl -a src/reg16bits.vhd
-ghdl -a src/bancoRegs16bits.vhd 
-ghdl -a src/top_level.vhd
-ghdl -a src/top_level_tb.vhd 
+ghdl -a src/maquinaEstados.vhd
+ghdl -a src/pc.vhd
 ghdl -a src/rom.vhd
+
+echo "Analisando blocos intermediários..."
+ghdl -a src/bancoRegs16bits.vhd 
+
+echo "Analisando Datapath e Controle..."
+ghdl -a src/top_level.vhd
 ghdl -a src/uc.vhd
+
+echo "Analisando Entidade Principal (Processador)..."
+ghdl -a src/processador.vhd
+
+echo "Analisando Testbenches..."
+ghdl -a src/top_level_tb.vhd 
 ghdl -a src/uc_tb.vhd
+ghdl -a src/processador_tb.vhd
 
+echo "Gerando arquivo de simulação do Processador Completo..."
+# Executa o testbench do processador e gera a onda
+ghdl -r processador_tb --wave=processador_tb.ghw
 
-echo "Gerando arquivo de simulação..."
-#EX:ghdl -r porta_tb --wave=porta_tb.ghw
-ghdl -r uc_tb --wave=uc_tb.ghw
-
-echo "Arquivo uc_tb.ghw gerado com sucesso."
-# gtkwave uc_tb.ghw para abrir a onda gerada
+echo "========================================================="
+echo "Sucesso! Arquivo processador_tb.ghw gerado."
+echo "Para visualizar as ondas, digite: gtkwave processador_tb.ghw"
+echo "========================================================="

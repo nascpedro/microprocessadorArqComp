@@ -9,7 +9,7 @@ entity top_level is
 
           wr_en_banco        : in std_logic;
           wr_en_acc          : in std_logic;
-          sel_operacao       : in unsigned(1 downto 0);
+          sel_operacao       : in unsigned(2 downto 0);
           sel_reg_wr         : in unsigned(2 downto 0);
           sel_reg_r1         : in unsigned(2 downto 0);
 
@@ -33,7 +33,7 @@ architecture a_top_level of top_level is
 
     component ula is
         port (   entr0, entr1                    :  in  unsigned(15 downto 0);
-                 sel_operacao                    :  in  unsigned (1 downto 0);
+                 sel_operacao                    :  in  unsigned (2 downto 0);
                  saida                           :  out unsigned(15 downto 0);
                  flag_N, flag_C, flag_Z, flag_V  :  out std_logic
  
@@ -84,9 +84,9 @@ begin
 
     --ULA
     ula_inst: ula port map (
-        entr0 => s_saida_acc, 
-        entr1 => s_entr1_ula, 
-        sel_operacao => sel_operacao, 
+        entr0 => s_saida_acc,
+        entr1 => s_entr1_ula,
+        sel_operacao => sel_operacao,
         saida => s_saida_ula,
         flag_N => s_flag_N, flag_C => s_flag_C, flag_Z => s_flag_Z, flag_V => s_flag_V
     );

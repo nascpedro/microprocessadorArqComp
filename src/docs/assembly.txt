@@ -8,7 +8,7 @@ LD R4, 8;
 # PASSO C: Soma R3 com R4 e guarda em R5 (O loop volta para ca)
 # 02: 
 MOV A, R3;
-# 03: CORRIGIDO PARA ADD (Acumulador = Acumulador + R4)
+# 03: ADD (Acumulador = Acumulador + R4)
 ADD A, R4; 
 # 04:
 MOV R5, A;
@@ -41,14 +41,16 @@ NOP;
 NOP; 
 NOP; 
 
-# PASSO G: No endereço 20, copia R5 para R3
+# PASSO G: No endereço 20, copia R5 para R3 usando o Acumulador
 # 20: 
-MOV R3, R5;
+MOV A, R5;
+# 21:
+MOV R3, A;
 
 # PASSO H: Salta de volta para o passo C (endereço 02)
-# 21: (PC = 22; alvo = 22 - 1 - 19 = 2)
-JMP -19;
+# 22: (PC = 23 no momento do cálculo; alvo = 23 - 1 - 20 = 2)
+JMP -20;
 
-# PASSO I: Nunca sera executada
-# 22:
+# PASSO I: Nunca será executada
+# 23:
 LD R3, 0;

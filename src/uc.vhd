@@ -3,10 +3,20 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;   
 
 entity uc is
-   port( clk       : in std_logic;
-         rst       : in std_logic;
-         pc_out    : out unsigned(15 downto 0);
-         saida_rom : out unsigned(14 downto 0)
+   port( clk           : in std_logic;
+         rst           : in std_logic;
+
+         pc_out        : out unsigned(15 downto 0);
+         saida_rom     : out unsigned(14 downto 0);
+
+         constante_out : out unsigned(15 downto 0); -- para passar a constante estendida para o top_level
+         wr_en_banco   : out std_logic; -- para controlar a escrita no banco de registradores
+         wr_en_acc     : out std_logic; -- para controlar a escrita no acumulador
+         sel_operacao  : out unsigned(2 downto 0); -- para controlar a operação da ULA
+         sel_reg_wr    : out unsigned(2 downto 0); -- para selecionar o registrador de escrita no banco
+         sel_reg_r1    : out unsigned(2 downto 0); -- para selecionar o registrador de leitura 1 no banco
+         sel_mux_ula   : out std_logic; -- para selecionar a entrada da ULA (0: banco, 1: constante)
+         sel_mux_data  : out std_logic -- para selecionar o dado a ser escrito (0: resultado da ULA, 1: constante)
    );
 end entity;
 
@@ -34,16 +44,21 @@ architecture a_uc of uc is
         );
     end component;
 
-    -- Sinais internos
-    signal s_pc_out       : unsigned(15 downto 0);
+    -- Sinais internos (PC e Estado)
     signal s_pc_in        : unsigned(15 downto 0);
+    signal s_pc_out       : unsigned(15 downto 0);
     signal s_pc_wr_en     : std_logic;
     signal s_estado       : std_logic;
+
+    -- Sinais internos (PInstrucao)
     signal s_saida_rom    : unsigned(14 downto 0);
+    signal s_ir           : unsigned(14 downto 0);
+    signal s_instrucao    : unsigned(14 downto 0); 
+    
+    -- Fatias da intrucao
     signal opcode         : unsigned(3 downto 0);
     signal extensao_sinal : unsigned(15 downto 0);
-    signal s_ir           : unsigned(14 downto 0);
-
+    
 begin
 
     -- ir: registrador de instrução. Atualiza no estado 1, lendo direto da ROM (pois o PC ainda não atualizou)
@@ -59,15 +74,19 @@ begin
         end if;
     end process;
 
-    -- Durante o estado 1, lemos direto da ROM pois o IR ainda não atualizou
-    opcode <= s_saida_rom(14 downto 11) when s_estado = '1' else s_ir(14 downto 11);
+    s_instrucao <= s_saida_rom when s_estado = '1' else s_ir; -- durante o estado 1, a instrucao é a que vem da ROM, depois é a que tá no IR
+
+
+    -- Fatiamento da instrucao para obter opcode e campos de registradores
+    opcode     <= s_instrucao(14 downto 11);
+    sel_reg_wr <= s_instrucao(10 downto 8);
+    sel_reg_r1 <= s_instrucao(7 downto 5);
     
     -- Extensão de sinal 
-    extensao_sinal <= s_saida_rom(10) & s_saida_rom(10) & s_saida_rom(10) 
-                    & s_saida_rom(10) & s_saida_rom(10) & s_saida_rom(10 downto 0)
-                    when s_estado = '1' else
-                    s_ir(10) & s_ir(10) & s_ir(10) 
-                    & s_ir(10) & s_ir(10) & s_ir(10 downto 0);
+    extensao_sinal <= s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & 
+                      s_instrucao(10) & s_instrucao(10 downto 0);
+
+    constante_out <= extensao_sinal; -- para passar a constante estendida para o top_level
 
     -- Entrada do PC: Se for JMP no estado 1, faz o salto relativo compensando o +1 anterior pq
     -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao vlta 1(-1) e pula o +4
@@ -79,6 +98,23 @@ begin
     s_pc_wr_en <= '1' when (s_estado = '0') else
                   '1' when (s_estado = '1' and opcode = "1111") else
                   '0';
+
+    -- Habilitação de escrita no banco: LD e MOV Rd,A
+    wr_en_banco <= '1' when (s_estado = '1') and (opcode = "0001" or opcode = "0100") else '0';
+
+    -- Habilitação de escrita no acumulador: MOV A, Rs; ADD A, Rs; SUBI A, cte
+    wr_en_acc <= '1' when (s_estado = '1') and (opcode = "0011" or opcode = "0101" or opcode = "0110") else '0';
+
+    -- Selecao ULA
+    sel_operacao <= "001" when opcode = "0110" else -- SUBI (Subtracao)
+                    "100" when opcode = "0011" else -- MOV A, Rs (Usa o "byPass" da entr1)
+                    "000"; -- Padrao (ADD). O MOV Rd, A (0100) vai cair aqui pra somar com 0.  
+                    
+    -- MUX Data
+    sel_mux_data <= '1' when opcode = "0001" else '0'; 
+
+    -- MUX ULA
+    sel_mux_ula <= '1' when (opcode = "0110" or opcode = "0100") else '0';
 
     
     maquinaEstados1 : maquinaEstados port map (
