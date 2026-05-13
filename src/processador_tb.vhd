@@ -35,12 +35,12 @@ begin
     sim_time_proc: process
     begin
         -- Estimativa de clocks: 
-        -- Setup inicial (carregar R3 e R4): 2 instrucoes = 4 clocks
-        -- Cada volta completa no loop gasta 9 instrucoes = 18 clocks
+        -- Setup inicial (carregar R3 e R4): 2 instrucoes = 6 clocks
+        -- Cada volta completa no loop gasta 9 instrucoes = 27 clocks
         -- Para ver a sequencia pedida (12, 19, 26, 33, 40) precisaremos de 5 voltas.
-        -- Total estimado: 4 + (5 * 18) = 94 clocks.
-        -- Usando 150 clocks por seguranca.
-        wait for period_time * 150;         
+        -- Total estimado: 6 + (5 * 27) = 141 clocks.
+        -- Usando 250 clocks por seguranca.
+        wait for period_time * 250;         
         finished <= '1';
         wait;
     end process sim_time_proc;
