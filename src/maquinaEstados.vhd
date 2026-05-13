@@ -3,22 +3,25 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity maquinaEstados is
-   port( clk      : in std_logic;
-         rst      : in std_logic;
-         estado   : out std_logic
-   );
+   port( clk,rst: in std_logic;
+         estado: out unsigned(1 downto 0)
+);
 end entity;
 
 architecture a_maquinaEstados of maquinaEstados is
-   signal estado_s: std_logic := '0';
-begin
-   process(clk,rst)  
+   signal estado_s: unsigned(1 downto 0);
+   begin
+   process(clk,rst)
    begin
       if rst='1' then
-            estado_s <= '0';
-       elsif rising_edge(clk) then
-         estado_s <= not estado_s;
-       end if;
+         estado_s <= "00"; -- 00 = estado de fetch, 01 = estado de decode, 10 = estado de execute
+      elsif rising_edge(clk) then
+         if estado_s="10" then -- se agora esta em 2
+            estado_s <= "00";  -- o prox vai voltar ao zero
+         else
+            estado_s <= estado_s+1; -- senao avanca
+         end if;
+      end if;
    end process;
-   estado <= estado_s;  
+   estado <= estado_s;
 end architecture;

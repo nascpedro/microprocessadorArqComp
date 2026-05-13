@@ -40,7 +40,7 @@ architecture a_uc of uc is
     component maquinaEstados is
         port( clk      : in std_logic;
               rst      : in std_logic;
-              estado   : out std_logic
+              estado   : out unsigned(1 downto 0)
         );
     end component;
 
@@ -48,7 +48,7 @@ architecture a_uc of uc is
     signal s_pc_in        : unsigned(15 downto 0);
     signal s_pc_out       : unsigned(15 downto 0);
     signal s_pc_wr_en     : std_logic;
-    signal s_estado       : std_logic;
+    signal s_estado       : unsigned(1 downto 0);
 
     -- Sinais internos (PInstrucao)
     signal s_saida_rom    : unsigned(14 downto 0);
@@ -69,13 +69,13 @@ begin
         if rst = '1' then
             s_ir <= (others => '0');
         elsif rising_edge(clk) then
-            if s_estado = '1' then
+            if s_estado = "01" then -- No estado de Decode, salva a instrucao
                 s_ir <= s_saida_rom;
             end if;
         end if;
     end process;
 
-    s_instrucao <= s_saida_rom when s_estado = '1' else s_ir; -- durante o estado 1, a instrucao é a que vem da ROM, depois é a que tá no IR
+    s_instrucao <= s_saida_rom when s_estado = "01" else s_ir; -- durante o estado 1, a instrucao é a que vem da ROM, depois é a que tá no IR
 
 
     -- Fatiamento da instrucao para obter opcode e campos de registradores
@@ -94,22 +94,22 @@ begin
 
     constante_out <= ext_cte; -- para passar a constante estendida para o top_level
 
-    -- Entrada do PC: Se for JMP no estado 1, faz o salto relativo compensando o +1 anterior pq
+    -- Entrada do PC: Se for JMP no estado 2, faz o salto relativo compensando o +1 anterior pq
     -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao vlta 1(-1) e pula o +4
     -- Caso contrário, prepara o PC + 1. ( pela logica do PC+1 gravado entre o primeiro e segundo estado)
-    s_pc_in <= (s_pc_out - 1 + ext_jmp) when (opcode = "1111" and s_estado = '1') else 
+    s_pc_in <= (s_pc_out - 1 + ext_jmp) when (opcode = "1111" and s_estado = "10") else 
                (s_pc_out + 1);
 
-    -- Habilitação de escrita: Grava PC+1 no fim do estado 0 OU o JMP no fim do estado 1
-    s_pc_wr_en <= '1' when (s_estado = '0') else
-                  '1' when (s_estado = '1' and opcode = "1111") else
+    -- Habilitação de escrita: Grava PC+1 no fim do estado 0 OU o JMP no fim do estado 2
+    s_pc_wr_en <= '1' when (s_estado = "00") else
+                  '1' when (s_estado = "10" and opcode = "1111") else
                   '0';
 
     -- Habilitação de escrita no banco: LD e MOV Rd,A
-    wr_en_banco <= '1' when (s_estado = '1') and (opcode = "0001" or opcode = "0100") else '0';
+    wr_en_banco <= '1' when (s_estado = "10") and (opcode = "0001" or opcode = "0100") else '0';
 
     -- Habilitação de escrita no acumulador: MOV A, Rs; ADD A, Rs; SUBI A, cte
-    wr_en_acc <= '1' when (s_estado = '1') and (opcode = "0011" or opcode = "0101" or opcode = "0110") else '0';
+    wr_en_acc <= '1' when (s_estado = "10") and (opcode = "0011" or opcode = "0101" or opcode = "0110") else '0';
 
     -- Selecao ULA
     sel_operacao <= "001" when opcode = "0110" else -- SUBI (Subtracao)
