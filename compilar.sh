@@ -15,8 +15,10 @@ ghdl -a src/reg16bits.vhd
 ghdl -a src/bancoRegs16bits.vhd 
 ghdl -a src/top_level.vhd
 ghdl -a src/top_level_tb.vhd 
+ghdl -a src/pc.vhd
 ghdl -a src/rom.vhd
-ghdl -a src/uc.vhd
+ghdl -a src/maquinaEstados.vhd
+ghdl -a src/uc.vhd         # A antiga proto_uc agora é uc!
 ghdl -a src/uc_tb.vhd
 
 

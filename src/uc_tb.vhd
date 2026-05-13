@@ -38,7 +38,7 @@ begin
     sim_time_proc: process
     begin
 
-        -- Estimativade clocks: Cada instrucao leva 2 clocks (estado 0 =fetch, estado 1 =execute)
+        -- Estimativa de clocks: Cada instrucao leva 2 clocks (estado 0 =fetch, estado 1 =execute)
         -- fora do loop: end. 0,1 = 4 clks, end. 2(JMP +4) = 2 clks ,end. 6 = 2 clks, end.7(JMP +3) = 2 clks
         -- total fora do loop: 10 clks
         -- dentro do loop: end. 10 = 2 clks, end. 11 = 2 clks, end. 12(JMP -2) = 2 clks

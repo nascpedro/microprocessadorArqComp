@@ -35,9 +35,12 @@ architecture a_rom of rom is
       17 => "000000000000000", -- NOP
       18 => "000000000000000", -- NOP
       19 => "000000000000000", -- NOP
-      20 => "001001110100000", -- MOV R3, R5 => [Opcode: 0010] [Destino: 011] [Origem: 101] [Constante: 00000]
-      21 => "111111111101101", -- JMP -19    => [Opcode: 1111] [Destino: 000] [Origem: 000] [Constante: 101101] (valor negativo em complemento de 2)
-      22 => "000101100000000", -- LD R3, 0   => [Opcode: 0001] [Destino: 011] [Origem: 000] [Constante: 00000]
+      20 => "001100010100000", -- MOV A, R5 => [Opcode: 0011] [Destino: 000] [Origem: 101] [Constante: 00000]
+      21 => "010001100000000", -- MOV R3, A => [Opcode: 0100] [Destino: 011] [Origem: 000] [Constante: 00000]
+      22 => "111111111101100", -- JMP -20   => [Opcode: 1111] [Destino: 000] [Origem: 000] [Constante: 10100 (2's complement de -20)]
+      23 => "000101100000000", -- LD R3, 0  => [Opcode: 0001] [Destino: 011] [Origem: 000] [Constante: 00000]
+      
+      others => (others=>'0')
       -- abaixo: casos omissos => (zero em todos os bits) --NOP
       others => (others=>'0')--NOP
    );

@@ -2,23 +2,18 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all; 
 
-entity top_level is
+entity processador is
     port( clk       : in std_logic;
           rst       : in std_logic;
-          constante_ext : in unsigned(15 downto 0); -- cte que vem de fora
-
-          wr_en_banco        : in std_logic;
-          wr_en_acc          : in std_logic;
-          sel_operacao       : in unsigned(1 downto 0);
-          sel_reg_wr         : in unsigned(2 downto 0);
-          sel_reg_r1         : in unsigned(2 downto 0);
-
-          sel_mux_ula        : in std_logic; -- 0: entra do banco, 1: entra a constante
-          sel_mux_data       : in std_logic -- 0: grava o resultado da ULA, 1: grava a constante
+          estado_out : out std_logic_vector(1 downto 0); 
+          pc_out     : out unsigned(15 downto 0);
+          instrucao  : out unsigned(14 downto 0);
+          saida_ula  : out unsigned(15 downto 0);
+          acumulador_out    : out unsigned(15 downto 0)
     );
 end entity;
 
-architecture a_top_level of top_level is
+architecture a_processador of processador is
 
     component bancoRegs16bits is          
          port( clk       : in std_logic;
@@ -49,6 +44,23 @@ architecture a_top_level of top_level is
         );
     end component;
 
+    component uc is
+        port( clk            : in std_logic;
+              rst            : in std_logic;
+              pc_out         : out unsigned(15 downto 0);
+              saida_rom      : out unsigned(14 downto 0);
+              estado         : out std_logic_vector(1 downto 0);
+              wr_en_banco    : out std_logic;
+              wr_en_acc      : out std_logic;
+              sel_operacao   : out unsigned(1 downto 0);
+              sel_mux_ula    : out std_logic;
+              sel_mux_data   : out std_logic;
+              endereco_rd    : out unsigned(2 downto 0);
+              endereco_rs    : out unsigned(2 downto 0);
+              constante_ext  : out unsigned(15 downto 0) 
+        );
+    end component;
+
     -- Fios que saem dos componentes
     signal s_saida_banco   : unsigned(15 downto 0);
     signal s_saida_acc     : unsigned(15 downto 0);
@@ -60,6 +72,10 @@ architecture a_top_level of top_level is
 
     -- Fios para as flags da ula:
     signal s_flag_N, s_flag_C, s_flag_Z, s_flag_V : std_logic;
+
+    -- Fios para a UC (não usados no processador, só para monitoramento)
+    signal s_pc_out_uc     : unsigned(15 downto 0);
+    signal s_saida_rom_uc  : unsigned(14 downto 0);
 
 begin
     -- MUX 1: O que entra na porta 1 da ULA?
@@ -89,6 +105,14 @@ begin
         sel_operacao => sel_operacao, 
         saida => s_saida_ula,
         flag_N => s_flag_N, flag_C => s_flag_C, flag_Z => s_flag_Z, flag_V => s_flag_V
+    );
+
+    --Unidade de Controle
+    uc_inst: uc port map (
+        clk => clk, rst => rst,
+        pc_out => s_pc_out_uc, 
+        saida_rom => s_saida_rom_uc,
+        estado => estado_out
     );
 
 end architecture;
