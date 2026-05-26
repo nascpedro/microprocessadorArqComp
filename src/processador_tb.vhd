@@ -27,7 +27,7 @@ begin
     reset_global: process
     begin
         rst <= '1';
-        wait for period_time*2; -- espera 2 clocks, pra garantir
+        wait for period_time; -- espera 2 clocks, pra garantir
         rst <= '0';
         wait;
     end process;

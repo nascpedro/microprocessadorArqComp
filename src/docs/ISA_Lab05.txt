@@ -13,4 +13,7 @@ TABELA OPCODE:
 -> 0101: ADD A, Rs (Soma [Rs] com o Acumulador)
 -> 0110: SUBI A, cte (Subtrai a cta. do Acumulador)
 -> 1111: JMP relativo (Jump do Lab 4)
-		
+
+-> 1001: BHI R, A, destino (Branch Higher Imediate)
+-> 1010: BLT R, A, destino (Branch Lower Than)
+   

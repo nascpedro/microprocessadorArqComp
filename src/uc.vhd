@@ -17,6 +17,11 @@ entity uc is
          sel_reg_r1    : out unsigned(2 downto 0); -- para selecionar o registrador de leitura 1 no banco
          sel_mux_ula   : out std_logic; -- para selecionar a entrada da ULA (0: banco, 1: constante)
          sel_mux_data  : out std_logic -- para selecionar o dado a ser escrito (0: resultado da ULA, 1: constante)
+        
+         N_in : in std_logic; -- para receber a flag N da ULA    
+         C_in : in std_logic; -- para receber a flag C da ULA
+         Z_in : in std_logic; -- para receber a flag Z da ULA
+         V_in : in std_logic -- para receber a flag V da ULA        
    );
 end entity;
 
@@ -60,6 +65,12 @@ architecture a_uc of uc is
     signal ext_jmp : unsigned(15 downto 0);
     signal ext_cte : unsigned(15 downto 0);
     
+    -- Sinais flip-flop para as flags da ULA
+    signal s_flag_N : std_logic;
+    signal s_flag_C : std_logic;
+    signal s_flag_Z : std_logic;    
+    signal s_flag_V : std_logic;
+
 begin
 
     -- ir: registrador de instrução. Atualiza no estado 1, lendo direto da ROM (pois o PC ainda não atualizou)
@@ -74,6 +85,51 @@ begin
             end if;
         end if;
     end process;
+    
+   process(clk,rst,wr_en)  
+   begin
+      if rst='1' then
+         s_flag_N <= '0';
+      elsif wr_en='1' then
+         if rising_edge(clk) then
+            s_flag_N <= N_in;
+         end if;
+      end if;
+   end process;
+
+   process(clk,rst,wr_en)  
+   begin
+      if rst='1' then
+         s_flag_C <= '0';
+      elsif wr_en='1' then
+         if rising_edge(clk) then
+            s_flag_C <= C_in;
+         end if;
+      end if;
+   end process;
+
+   process(clk,rst,wr_en)  
+   begin
+      if rst='1' then
+         s_flag_Z <= '0';
+      elsif wr_en='1' then
+         if rising_edge(clk) then
+            s_flag_Z <= Z_in;
+         end if;
+      end if;
+   end process;
+   
+   process(clk,rst,wr_en)  
+   begin
+      if rst='1' then
+         s_flag_V <= '0';
+      elsif wr_en='1' then
+         if rising_edge(clk) then
+            s_flag_V <= V_in;
+         end if;
+      end if;
+   end process;
+
 
     s_instrucao <= s_saida_rom when s_estado = "01" else s_ir; -- durante o estado 1, a instrucao é a que vem da ROM, depois é a que tá no IR
 

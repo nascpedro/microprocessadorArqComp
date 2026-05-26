@@ -38,4 +38,4 @@ echo "Para visualizar as ondas, digite: gtkwave processador_tb.ghw"
 echo "========================================================="
 
 
-gtkwave processador_tb.ghw ondas_lab5.gtkw 
+gtkwave processador_tb.ghw ondas_lab5.gtkw

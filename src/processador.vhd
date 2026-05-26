@@ -21,7 +21,11 @@ architecture a_processador of processador is
              sel_reg_wr    : out unsigned(2 downto 0);
              sel_reg_r1    : out unsigned(2 downto 0);
              sel_mux_ula   : out std_logic;
-             sel_mux_data  : out std_logic
+             sel_mux_data  : out std_logic;
+             N_in : in std_logic;
+             C_in : in std_logic;
+             Z_in : in std_logic;
+             V_in : in std_logic
        );
     end component;
 
@@ -35,7 +39,11 @@ architecture a_processador of processador is
              sel_reg_wr    : in unsigned(2 downto 0);
              sel_reg_r1    : in unsigned(2 downto 0);
              sel_mux_ula   : in std_logic;
-             sel_mux_data  : in std_logic
+             sel_mux_data  : in std_logic;
+             N_out : out std_logic;
+             C_out : out std_logic;
+             Z_out : out std_logic;
+             V_out : out std_logic  
        );
     end component;
 
@@ -48,6 +56,11 @@ architecture a_processador of processador is
     signal w_sel_op : unsigned(2 downto 0);
     signal w_sel_w  : unsigned(2 downto 0);
     signal w_sel_r  : unsigned(2 downto 0);
+        
+    signal s_flag_N : std_logic;
+    signal s_flag_C : std_logic;
+    signal s_flag_Z : std_logic;
+    signal s_flag_V : std_logic;
 
 begin
     inst_uc: uc port map (
@@ -61,6 +74,10 @@ begin
         sel_reg_r1 => w_sel_r,
         sel_mux_ula => w_m_ula, 
         sel_mux_data => w_m_data
+        N_in => s_flag_N,
+        C_in => s_flag_C,
+        Z_in => s_flag_Z,
+        V_in => s_flag_V
     );
 
     inst_dp: top_level port map (
@@ -73,6 +90,10 @@ begin
         sel_reg_wr => w_sel_w, 
         sel_reg_r1 => w_sel_r,
         sel_mux_ula => w_m_ula, 
-        sel_mux_data => w_m_data
+        sel_mux_data => w_m_data,
+        N_out => s_flag_N,
+        C_out => s_flag_C,
+        Z_out => s_flag_Z,
+        V_out => s_flag_V
     );
 end architecture;

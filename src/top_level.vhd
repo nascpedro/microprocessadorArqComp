@@ -15,6 +15,12 @@ entity top_level is
 
           sel_mux_ula        : in std_logic; -- 0: entra do banco, 1: entra a constante
           sel_mux_data: in std_logic -- 0: grava o resultado da ULA, 1: grava a constante
+
+          N_out : out std_logic;
+          C_out : out std_logic;
+          Z_out : out std_logic;
+          V_out : out std_logic 
+
     );
 end entity;
 
@@ -67,6 +73,11 @@ begin
 
     -- MUX 2: O que vai ser gravado nos registradores/acumulador? 
     s_dado_escrita <= constante_ext when sel_mux_data = '1' else s_saida_ula;
+
+    N_out <= s_flag_N;
+    C_out <= s_flag_C;
+    Z_out <= s_flag_Z;
+    V_out <= s_flag_V;
 
     -- Banco de Registradores
     banco: bancoRegs16bits port map (
