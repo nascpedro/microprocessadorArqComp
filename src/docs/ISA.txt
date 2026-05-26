@@ -11,9 +11,10 @@ TABELA OPCODE:
 -> 0011: MOV A, Rs (Copia o valor de [Rs] para o Acumulador)
 -> 0100: MOV Rd, A (Copia o Acumulador para o reg. [Rd])
 -> 0101: ADD A, Rs (Soma [Rs] com o Acumulador)
--> 0110: SUBI A, cte (Subtrai a cta. do Acumulador)
+-> 0110: SUBI A, cte (Subtrai A cte. do Acumulador)
+-> 0111: ADDI A, cte (Soma A cte. do acumulador)
 -> 1111: JMP relativo (Jump do Lab 4)
 
--> 1001: BHI R, A, destino (Branch Higher Imediate)
--> 1010: BLT R, A, destino (Branch Lower Than)
+-> 1001: BHI R, A, destino (Branch Higher)
+-> 1010: BLT R, A, destino (Branch Lower)
    

@@ -28,14 +28,17 @@ ghdl -a src/top_level_tb.vhd
 ghdl -a src/uc_tb.vhd
 ghdl -a src/processador_tb.vhd
 
+echo "Elaborando Entidade Principal..."
+ghdl -e processador_tb
+
 echo "Gerando arquivo de simulação do Processador Completo..."
-# Executa o testbench do processador e gera a onda
-ghdl -r processador_tb --wave=processador_tb.ghw
+# Executa o testbench do processador, gera a onda e PARA após 25 microssegundos
+ghdl -r processador_tb --wave=processador_tb.ghw --stop-time=25us
 
 echo "========================================================="
 echo "Sucesso! Arquivo processador_tb.ghw gerado."
 echo "Para visualizar as ondas, digite: gtkwave processador_tb.ghw"
 echo "========================================================="
 
-
-gtkwave processador_tb.ghw ondas_lab5.gtkw
+# Abre o GTKWave automaticamente com o arquivo de ondas e o layout salvo
+gtkwave processador_tb.ghw ondas_lab6.gtkw

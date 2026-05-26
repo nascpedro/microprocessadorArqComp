@@ -13,32 +13,31 @@ architecture a_rom of rom is
       
       -- caso endereco => conteudo
       -- [Opcode: 4 bits] [Destino: 3 bits] [Origem: 3 bits] [Constante: 5 bits]
-      -- Codigos de opcode em ./src/docs/ISA_Lab05.txt
+      -- Codigos de opcode em ./src/docs/ISA.txt
 
-      0  => "000101100000101", -- LD R3, 5   => [Opcode: 0001] [Destino: 011] [Origem: 000] [Constante: 00101]
-      1  => "000110000001000", -- LD R4, 8   => [Opcode: 0001] [Destino: 100] [Origem: 000] [Constante: 01000]
-      2  => "001100001100000", -- MOV A, R3  => [Opcode: 0011] [Destino: 000] [Origem: 011] [Constante: 00000]
-      3  => "010100010000000", -- ADD A, R4  => [Opcode: 0101] [Destino: 000] [Origem: 100] [Constante: 00000]
-      4  => "000000000000000", -- NOP
-      5  => "011000000000001", -- SUBI A, 1  => [Opcode: 0110] [Destino: 000] [Origem: 000] [Constante: 00001]
-      6  => "010010100000000", -- MOV R5, A  => [Opcode: 0100] [Destino: 101] [Origem: 000] [Constante: 00000]
-      7  => "111100000001101", -- JMP +13    => [Opcode: 1111] [Destino: 000] [Origem: 000] [Constante: 01101]
-      8  => "000110100000000", -- LD R5, 0   => [Opcode: 0001] [Destino: 101] [Origem: 000] [Constante: 00000]
-      9  => "000000000000000", -- NOP        => [Opcode: 0000] [Destino: 000] [Origem: 000] [Constante: 00000]
-      10 => "000000000000000", -- NOP
-      11 => "000000000000000", -- NOP
-      12 => "000000000000000", -- NOP
-      13 => "000000000000000", -- NOP
-      14 => "000000000000000", -- NOP
-      15 => "000000000000000", -- NOP
-      16 => "000000000000000", -- NOP
-      17 => "000000000000000", -- NOP
-      18 => "000000000000000", -- NOP
-      19 => "000000000000000", -- NOP
-      20 => "001100010100000", -- MOV A, R5 => [Opcode: 0011] [Destino: 000] [Origem: 101] [Constante: 00000]
-      21 => "010001100000000", -- MOV R3, A => [Opcode: 0100] [Destino: 011] [Origem: 000] [Constante: 00000]
-      22 => "111111111101100", -- JMP -20   => [Opcode: 1111] [Destino: 000] [Origem: 000] [Constante: 10100 (-20 em complemento de 2)]
-      others => (others=>'0')--NOP
+      -- Passos A e B: Carrega R3 e R4 com 0
+      0  => "000101100000000", -- LD R3, 0   (Opcode: 0001 | Dest: 011 | Orig: 000 | Cte: 00000)
+      1  => "000110000000000", -- LD R4, 0   (Opcode: 0001 | Dest: 100 | Orig: 000 | Cte: 00000)
+  
+      -- Passo C (INÍCIO DO LOOP - Endereço 2)
+      2  => "001100010000000", -- MOV A, R4  (Opcode: 0011 | Dest: 000 | Orig: 100 | Cte: 00000)
+      3  => "010100001100000", -- ADD A, R3  (Opcode: 0101 | Dest: 000 | Orig: 011 | Cte: 00000)
+      4  => "010010000000000", -- MOV R4, A  (Opcode: 0100 | Dest: 100 | Orig: 000 | Cte: 00000)
+      
+      -- Passo D (Soma 1 em R3 usando ADDI)
+      5  => "001100001100000", -- MOV A, R3  (Opcode: 0011 | Dest: 000 | Orig: 011 | Cte: 00000)
+      6  => "011100000000001", -- ADDI A, 1  (Opcode: 0111 | Dest: 000 | Orig: 000 | Cte: 00001)
+      7  => "010001100000000", -- MOV R3, A  (Opcode: 0100 | Dest: 011 | Orig: 000 | Cte: 00000)
+
+      -- Passo E (Comparacao e Desvio)
+      8  => "001100001100000", -- MOV A, R3  (Opcode: 0011 | Dest: 000 | Orig: 011 | Cte: 00000)
+      9  => "011000000011110", -- SUBI A, 30 (Opcode: 0110 | Dest: 000 | Orig: 000 | Cte: 11110)
+      10 => "101011111111000", -- BLT -8     (Opcode: 1010 | Dest: 111 | Orig: 111 | Cte: 11000) (-8 em comp. de 2)
+
+      -- Passo F (Saida do Loop - Copia R4 para R5)
+      11 => "001100010000000", -- MOV A, R4  (Opcode: 0011 | Dest: 000 | Orig: 100 | Cte: 00000)
+      12 => "010010100000000", -- MOV R5, A  (Opcode: 0100 | Dest: 101 | Orig: 000 | Cte: 00000) 
+      others => (others=>'0') -- NOP
    );
 begin
    process(clk)

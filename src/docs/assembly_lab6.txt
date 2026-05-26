@@ -1,0 +1,40 @@
+# Assembly teste professor Lab06
+
+# PASSO A e B: Carrega R3 com 0 e R4 com 0
+# 00:
+LD R3, 0;    # Inicializa R3 com 0
+# 01:
+LD R4, 0;    # Inicializa R4 com 0
+
+# PASSO C: Soma R3 com R4 e guarda em R4 (ALVO DO LOOP)
+# 02: 
+MOV A, R4;   # Traz R4 para o acumulador
+# 03: 
+ADD A, R3;   # A = R4 + R3
+# 04: 
+MOV R4, A;   # Salva o resultado de volta em R4
+
+# PASSO D: Soma 1 em R3
+# 05: 
+MOV A, R3;   # Traz R3 para o acumulador
+# 06: 
+ADDI A, 1;   # Soma constante 1 
+# 07: 
+MOV R3, A;   # Devolve o valor incrementado para R3
+
+# PASSO E: Se R3 < 30 salta para a instrucao do passo C
+# 08: 
+MOV A, R3;   # Traz o R3 atualizado de volta ao acumulador
+# 09: 
+SUBI A, 30;  # Faz (R3 - 30) para forçar as Flags da ULA (Z e C) a atualizarem
+# 10: 
+BLT -8;      # Salta para PC=02 caso a Flag de Carry acuse que R3 é menor
+             # Calculo do alvo: Endereço do BLT (10) - 8 = Endereço Alvo (02). 
+
+# PASSO F: Copia valor de R4 para R5 (So executa quando sair do loop)
+# 11: 
+MOV A, R4;   # Traz o R4 (agora com o somatório final) para o A
+# 12: 
+MOV R5, A;   # Copia o somatório definitivo no R5
+
+#FIM

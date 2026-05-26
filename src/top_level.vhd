@@ -14,7 +14,7 @@ entity top_level is
           sel_reg_r1         : in unsigned(2 downto 0);
 
           sel_mux_ula        : in std_logic; -- 0: entra do banco, 1: entra a constante
-          sel_mux_data: in std_logic -- 0: grava o resultado da ULA, 1: grava a constante
+          sel_mux_data: in std_logic; -- 0: grava o resultado da ULA, 1: grava a constante
 
           N_out : out std_logic;
           C_out : out std_logic;

@@ -26,10 +26,10 @@ begin
     s_and  <= entr0 and entr1; 
     s_byPass <= entr1; -- op. para passar o valor direto, EX: MOV A, Rs
 
-    s_resultado_final <= s_soma   when sel_operacao  = "00"  else
-                         s_subt   when sel_operacao  = "01"  else
-                         s_mult   when sel_operacao  = "10"  else
-                         s_and    when sel_operacao  = "11"  else
+    s_resultado_final <= s_soma   when sel_operacao  = "000"  else
+                         s_subt   when sel_operacao  = "001"  else
+                         s_mult   when sel_operacao  = "010"  else
+                         s_and    when sel_operacao  = "011"  else
                          s_byPass when sel_operacao = "100" else
                          "0000000000000000";
 
@@ -40,14 +40,14 @@ begin
     flag_Z <= '1' when (s_resultado_final = "0000000000000000")
                   else '0';
 
-    flag_V <= '1' when (sel_operacao = "00" and ((entr0(15) = entr1(15)) and ((entr0(15) xor s_resultado_final(15)) = '1')))
+    flag_V <= '1' when (sel_operacao = "000" and ((entr0(15) = entr1(15)) and ((entr0(15) xor s_resultado_final(15)) = '1')))
               else
-              '1' when (sel_operacao = "01" and ((entr0(15) /= entr1(15)) and ((entr0(15) xor s_resultado_final(15)) = '1')))
+              '1' when (sel_operacao = "001" and ((entr0(15) /= entr1(15)) and ((entr0(15) xor s_resultado_final(15)) = '1')))
               else '0';
 
-    flag_C <= '1' when (sel_operacao = "00" and ((entr0(15) and entr1(15)) = '1' or (not s_resultado_final(15) and (entr0(15) or entr1(15))) = '1'))
+    flag_C <= '1' when (sel_operacao = "000" and ((entr0(15) and entr1(15)) = '1' or (not s_resultado_final(15) and (entr0(15) or entr1(15))) = '1'))
               else
-              '1' when (sel_operacao = "01" and (entr0 < entr1)) 
+              '1' when (sel_operacao = "001" and (entr0 < entr1))  -- C = 1 quando nao ha BORROW
               else '0';
 
 end architecture;

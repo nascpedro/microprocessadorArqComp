@@ -16,12 +16,12 @@ entity uc is
          sel_reg_wr    : out unsigned(2 downto 0); -- para selecionar o registrador de escrita no banco
          sel_reg_r1    : out unsigned(2 downto 0); -- para selecionar o registrador de leitura 1 no banco
          sel_mux_ula   : out std_logic; -- para selecionar a entrada da ULA (0: banco, 1: constante)
-         sel_mux_data  : out std_logic -- para selecionar o dado a ser escrito (0: resultado da ULA, 1: constante)
+         sel_mux_data  : out std_logic; -- para selecionar o dado a ser escrito (0: resultado da ULA, 1: constante)
         
          N_in : in std_logic; -- para receber a flag N da ULA    
          C_in : in std_logic; -- para receber a flag C da ULA
          Z_in : in std_logic; -- para receber a flag Z da ULA
-         V_in : in std_logic -- para receber a flag V da ULA        
+         V_in : in std_logic  -- para receber a flag V da ULA        
    );
 end entity;
 
@@ -70,9 +70,13 @@ architecture a_uc of uc is
     signal s_flag_C : std_logic;
     signal s_flag_Z : std_logic;    
     signal s_flag_V : std_logic;
+    signal s_wr_flags : std_logic;
+    signal s_condicao_atendida : std_logic;
 
 begin
 
+    -- Habilita escrita das flags apenas no estado de execução de operações da ula
+    s_wr_flags <= '1' when (s_estado = "10" and (opcode = "0101" or opcode = "0110" or opcode = "0111")) else '0';
     -- ir: registrador de instrução. Atualiza no estado 1, lendo direto da ROM (pois o PC ainda não atualizou)
     -- Conforme sorteio: wr_en no segundo estado (s_estado = '1')
     process(clk, rst)
@@ -86,50 +90,56 @@ begin
         end if;
     end process;
     
-   process(clk,rst,wr_en)  
+   process(clk,rst)  
    begin
       if rst='1' then
          s_flag_N <= '0';
-      elsif wr_en='1' then
-         if rising_edge(clk) then
+      elsif rising_edge(clk) then
+         if s_wr_flags='1' then
             s_flag_N <= N_in;
          end if;
       end if;
    end process;
 
-   process(clk,rst,wr_en)  
+   process(clk,rst)  
    begin
       if rst='1' then
          s_flag_C <= '0';
-      elsif wr_en='1' then
-         if rising_edge(clk) then
+      elsif rising_edge(clk) then
+         if s_wr_flags='1' then
             s_flag_C <= C_in;
          end if;
       end if;
    end process;
 
-   process(clk,rst,wr_en)  
+   process(clk,rst)  
    begin
       if rst='1' then
          s_flag_Z <= '0';
-      elsif wr_en='1' then
-         if rising_edge(clk) then
+      elsif rising_edge(clk) then
+         if s_wr_flags='1' then
             s_flag_Z <= Z_in;
          end if;
       end if;
    end process;
    
-   process(clk,rst,wr_en)  
+   process(clk,rst)  
    begin
       if rst='1' then
          s_flag_V <= '0';
-      elsif wr_en='1' then
-         if rising_edge(clk) then
+      elsif rising_edge(clk) then
+         if s_wr_flags='1' then
             s_flag_V <= V_in;
          end if;
       end if;
    end process;
 
+    
+    -- Logica de desvios condicionais (para BLT e BHI)
+    s_condicao_atendida <= '1' when (opcode = "1111") else
+                           '1' when (opcode = "1010" and (s_flag_N xor s_flag_V) = '1') else -- BLT (Menor que) N!=V 
+                           '1' when (opcode = "1001" and s_flag_Z = '0' and s_flag_C = '0') else -- BHI (Maior que) quando C=0 pois C=1 indica que a BORROW
+                           '0';
 
     s_instrucao <= s_saida_rom when s_estado = "01" else s_ir; -- durante o estado 1, a instrucao é a que vem da ROM, depois é a que tá no IR
 
@@ -143,40 +153,39 @@ begin
     ext_jmp <= s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & s_instrucao(10) & 
                s_instrucao(10) & s_instrucao(10 downto 0);
 
-    -- Extensão para Matemática/Cargas (5 bits: copia o bit 4 doze vezes)
-    ext_cte <= s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & 
-               s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & s_instrucao(4) & 
-               s_instrucao(4) & s_instrucao(4 downto 0);
+    -- Extensão para Matemática/Cargas com ZEROS
+    ext_cte <= "00000000000" & s_instrucao(4 downto 0);
 
     constante_out <= ext_cte; -- para passar a constante estendida para o top_level
 
     -- Entrada do PC: Se for JMP no estado 2, faz o salto relativo compensando o +1 anterior pq
     -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao vlta 1(-1) e pula o +4
     -- Caso contrário, prepara o PC + 1. ( pela logica do PC+1 gravado entre o primeiro e segundo estado)
-    s_pc_in <= (s_pc_out - 1 + ext_jmp) when (opcode = "1111" and s_estado = "10") else 
-               (s_pc_out + 1);
+    s_pc_in <= (s_pc_out - 1 + ext_jmp) when ((opcode = "1111" and s_estado = "10") 
+               or (opcode = "1001" and s_estado = "10") or (opcode = "1010" and s_estado = "10")) 
+               else (s_pc_out + 1);
 
     -- Habilitação de escrita: Grava PC+1 no fim do estado 0 OU o JMP no fim do estado 2
     s_pc_wr_en <= '1' when (s_estado = "00") else
-                  '1' when (s_estado = "10" and opcode = "1111") else
+                  '1' when (s_estado = "10" and s_condicao_atendida = '1') else
                   '0';
 
     -- Habilitação de escrita no banco: LD e MOV Rd,A
     wr_en_banco <= '1' when (s_estado = "10") and (opcode = "0001" or opcode = "0100") else '0';
 
     -- Habilitação de escrita no acumulador: MOV A, Rs; ADD A, Rs; SUBI A, cte
-    wr_en_acc <= '1' when (s_estado = "10") and (opcode = "0011" or opcode = "0101" or opcode = "0110") else '0';
+    wr_en_acc <= '1' when (s_estado = "10") and (opcode = "0011" or opcode = "0101" or opcode = "0110" or opcode = "0111") else '0';
 
     -- Selecao ULA
-    sel_operacao <= "001" when opcode = "0110" else -- SUBI (Subtracao)
+    sel_operacao <= "001" when (opcode = "0110" or opcode = "1001" or opcode = "1010") else -- SUBI, BLT e BHI
                     "100" when opcode = "0011" else -- MOV A, Rs (Usa o "byPass" da entr1)
-                    "000"; -- Padrao (ADD). O MOV Rd, A (0100) vai cair aqui pra somar com 0.  
+                    "000"; -- Padrao (ADD). O MOV Rd, A (0100) vai cair aqui pra somar com 0, ADDI(0111) também cai aqui somando com a cte. que vem na entr1.
                     
     -- MUX Data
-    sel_mux_data <= '1' when opcode = "0001" else '0'; 
+    sel_mux_data <= '1' when opcode = "0001" else '0'; -- Nao escreve caso seja BHI ou BLT 
 
     -- MUX ULA
-    sel_mux_ula <= '1' when (opcode = "0110" or opcode = "0100") else '0';
+    sel_mux_ula <= '1' when (opcode = "0110" or opcode = "0100" or opcode = "0111") else '0'; -- Nao escreve caso seja BHI ou BLT 
 
     
     maquinaEstados1 : maquinaEstados port map (

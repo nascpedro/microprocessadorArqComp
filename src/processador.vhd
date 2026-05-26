@@ -73,7 +73,7 @@ begin
         sel_reg_wr => w_sel_w, 
         sel_reg_r1 => w_sel_r,
         sel_mux_ula => w_m_ula, 
-        sel_mux_data => w_m_data
+        sel_mux_data => w_m_data,
         N_in => s_flag_N,
         C_in => s_flag_C,
         Z_in => s_flag_Z,
