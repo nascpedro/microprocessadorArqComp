@@ -161,9 +161,9 @@ begin
     -- Entrada do PC: Se for JMP no estado 2, faz o salto relativo compensando o +1 anterior pq
     -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao vlta 1(-1) e pula o +4
     -- Caso contrário, prepara o PC + 1. ( pela logica do PC+1 gravado entre o primeiro e segundo estado)
-    s_pc_in <= (s_pc_out - 1 + ext_jmp) when ((opcode = "1111" and s_estado = "10") 
-               or (opcode = "1001" and s_estado = "10") or (opcode = "1010" and s_estado = "10")) 
-               else (s_pc_out + 1);
+    s_pc_in <= (s_pc_out - 1 + ext_jmp) when (opcode = "1111" and s_estado = "10") else
+               ("00000" & s_instrucao(10 downto 0)) when ((opcode = "1001" or opcode = "1010") and s_estado = "10") else 
+               (s_pc_out + 1);
 
     -- Habilitação de escrita: Grava PC+1 no fim do estado 0 OU o JMP no fim do estado 2
     s_pc_wr_en <= '1' when (s_estado = "00") else

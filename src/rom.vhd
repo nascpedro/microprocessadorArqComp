@@ -14,7 +14,6 @@ architecture a_rom of rom is
       -- caso endereco => conteudo
       -- [Opcode: 4 bits] [Destino: 3 bits] [Origem: 3 bits] [Constante: 5 bits]
       -- Codigos de opcode em ./src/docs/ISA.txt
-
       -- Passos A e B: Carrega R3 e R4 com 0
       0  => "000101100000000", -- LD R3, 0   (Opcode: 0001 | Dest: 011 | Orig: 000 | Cte: 00000)
       1  => "000110000000000", -- LD R4, 0   (Opcode: 0001 | Dest: 100 | Orig: 000 | Cte: 00000)
@@ -32,8 +31,8 @@ architecture a_rom of rom is
       -- Passo E (Comparacao e Desvio)
       8  => "001100001100000", -- MOV A, R3  (Opcode: 0011 | Dest: 000 | Orig: 011 | Cte: 00000)
       9  => "011000000011110", -- SUBI A, 30 (Opcode: 0110 | Dest: 000 | Orig: 000 | Cte: 11110)
-      10 => "101011111111000", -- BLT -8     (Opcode: 1010 | Dest: 111 | Orig: 111 | Cte: 11000) (-8 em comp. de 2)
-
+      -- Passo E (Comparacao e Desvio absoluto)
+      10 => "101000000000010", -- BLT 2  (Opcode: 1010 | Endereço direto: 00000000010)
       -- Passo F (Saida do Loop - Copia R4 para R5)
       11 => "001100010000000", -- MOV A, R4  (Opcode: 0011 | Dest: 000 | Orig: 100 | Cte: 00000)
       12 => "010010100000000", -- MOV R5, A  (Opcode: 0100 | Dest: 101 | Orig: 000 | Cte: 00000) 
