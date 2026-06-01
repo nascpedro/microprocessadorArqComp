@@ -9,35 +9,50 @@ entity rom is
 end entity;
 architecture a_rom of rom is
    type mem is array (0 to 127) of unsigned(14 downto 0);
-   constant conteudo_rom : mem := (
-      
-      -- caso endereco => conteudo
-      -- [Opcode: 4 bits] [Destino: 3 bits] [Origem: 3 bits] [Constante: 5 bits]
-      -- Codigos de opcode em ./src/docs/ISA.txt
-      -- Passos A e B: Carrega R3 e R4 com 0
-      0  => "000101100000000", -- LD R3, 0   (Opcode: 0001 | Dest: 011 | Orig: 000 | Cte: 00000)
-      1  => "000110000000000", -- LD R4, 0   (Opcode: 0001 | Dest: 100 | Orig: 000 | Cte: 00000)
-  
-      -- Passo C (INÍCIO DO LOOP - Endereço 2)
-      2  => "001100010000000", -- MOV A, R4  (Opcode: 0011 | Dest: 000 | Orig: 100 | Cte: 00000)
-      3  => "010100001100000", -- ADD A, R3  (Opcode: 0101 | Dest: 000 | Orig: 011 | Cte: 00000)
-      4  => "010010000000000", -- MOV R4, A  (Opcode: 0100 | Dest: 100 | Orig: 000 | Cte: 00000)
-      
-      -- Passo D (Soma 1 em R3 usando ADDI)
-      5  => "001100001100000", -- MOV A, R3  (Opcode: 0011 | Dest: 000 | Orig: 011 | Cte: 00000)
-      6  => "011100000000001", -- ADDI A, 1  (Opcode: 0111 | Dest: 000 | Orig: 000 | Cte: 00001)
-      7  => "010001100000000", -- MOV R3, A  (Opcode: 0100 | Dest: 011 | Orig: 000 | Cte: 00000)
+    constant conteudo_rom : mem := (
+        -- PASSO 1: Ponteiros de endereco
+        0  => "000100000001010", -- LD R0, 10
+        1  => "000100100010100", -- LD R1, 20
+        2  => "000101000011110", -- LD R2, 30
 
-      -- Passo E (Comparacao e Desvio)
-      8  => "001100001100000", -- MOV A, R3  (Opcode: 0011 | Dest: 000 | Orig: 011 | Cte: 00000)
-      9  => "011000000011110", -- SUBI A, 30 (Opcode: 0110 | Dest: 000 | Orig: 000 | Cte: 11110)
-      -- Passo E (Comparacao e Desvio absoluto)
-      10 => "101000000000010", -- BLT 2  (Opcode: 1010 | Endereço direto: 00000000010)
-      -- Passo F (Saida do Loop - Copia R4 para R5)
-      11 => "001100010000000", -- MOV A, R4  (Opcode: 0011 | Dest: 000 | Orig: 100 | Cte: 00000)
-      12 => "010010100000000", -- MOV R5, A  (Opcode: 0100 | Dest: 101 | Orig: 000 | Cte: 00000) 
-      others => (others=>'0') -- NOP
-   );
+        -- PASSO 2: Escritas na RAM
+        3  => "000101100000101", -- LD R3, 5
+        4  => "001100001100000", -- MOV A, R3
+        5  => "110000000000000", -- SW A, (R0) -> Grava 5 na RAM[10]
+
+        6  => "000110000001111", -- LD R4, 15
+        7  => "001100010000000", -- MOV A, R4
+        8  => "110000000100000", -- SW A, (R1) -> Grava 15 na RAM[20]
+
+        9  => "000110100011001", -- LD R5, 25
+        10 => "001100010100000", -- MOV A, R5
+        11 => "110000001000000", -- SW A, (R2) -> Grava 25 na RAM[30]
+
+        -- PASSO 3: Flush Absoluto (Zerar os registos R3, R4 e R5)
+        12 => "000101100000000", -- LD R3, 0   -> Agora R3 = 0
+        13 => "001100001100000", -- MOV A, R3  -> Acumulador = 0
+        14 => "010010000000000", -- MOV R4, A  -> R4 = 0
+        15 => "010010100000000", -- MOV R5, A  -> R5 = 0
+
+        -- PASSO 4: Leituras (Se a RAM falhar, eles continuam a zero)
+        16 => "101101100000000", -- LW R3, (R0) -> Tem de ler 5
+        17 => "101110000100000", -- LW R4, (R1) -> Tem de ler 15
+        18 => "101110101000000", -- LW R5, (R2) -> Tem de ler 25
+
+        -- PASSO 5: Prova de Vida (Matematica)
+        19 => "001100001100000", -- MOV A, R3   (A = 5)
+        20 => "010100010000000", -- ADD A, R4   (A = 5 + 15 = 20)
+        21 => "010100010100000", -- ADD A, R5   (A = 20 + 25 = 45)
+
+        -- PASSO 6: O Teste do "Buraco Negro" (Prova de R7 = GND)
+        22 => "000111100011111", -- LD R7, 31   (Tenta forcar o valor 31 no R7)
+        23 => "010100011100000", -- ADD A, R7   (Soma R7 ao Acc. Se R7 = 0, Acc continua 45)
+
+        -- PASSO 7: Travar PC
+        24 => "111100000000000", -- JMP 0 (Fica preso no 24)
+        
+        others => (others => '0')
+    );
 begin
    process(clk)
    begin

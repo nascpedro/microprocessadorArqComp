@@ -6,6 +6,7 @@ entity top_level is
     port( clk       : in std_logic;
           rst       : in std_logic;
           constante_ext : in unsigned(15 downto 0); -- cte que vem de fora
+          dado_ram_in   : in unsigned(15 downto 0); -- dado lido da RAM para o caminho do LW
 
           wr_en_banco        : in std_logic;
           wr_en_acc          : in std_logic;
@@ -14,13 +15,15 @@ entity top_level is
           sel_reg_r1         : in unsigned(2 downto 0);
 
           sel_mux_ula        : in std_logic; -- 0: entra do banco, 1: entra a constante
-          sel_mux_data: in std_logic; -- 0: grava o resultado da ULA, 1: grava a constante
+          sel_mux_data       : in unsigned(1 downto 0); -- 00: dado da ULA, 01: constante, 10: dado da RAM (LW)
 
           N_out : out std_logic;
           C_out : out std_logic;
           Z_out : out std_logic;
-          V_out : out std_logic 
+          V_out : out std_logic; 
 
+          saida_banco : out unsigned(15 downto 0); -- saída assíncrona do banco de registradores para ser a entrada da RAM
+          saida_acumulador : out unsigned(15 downto 0) 
     );
 end entity;
 
@@ -71,14 +74,21 @@ begin
     -- MUX 1: O que entra na porta 1 da ULA?
     s_entr1_ula <= constante_ext when sel_mux_ula = '1' else s_saida_banco;
 
-    -- MUX 2: O que vai ser gravado nos registradores/acumulador? 
-    s_dado_escrita <= constante_ext when sel_mux_data = '1' else s_saida_ula;
+    -- MUX 2 CORRIGIDO: O que vai ser gravado nos registradores/acumulador? 
+    s_dado_escrita <= dado_ram_in   when sel_mux_data = "10" else -- Caminho novo da RAM (LW)
+                      constante_ext when sel_mux_data = "01" else -- Caminho da constante (LD)
+                      s_saida_ula;                                -- Caminho padrão da ULA
 
     N_out <= s_flag_N;
     C_out <= s_flag_C;
     Z_out <= s_flag_Z;
     V_out <= s_flag_V;
 
+    -- Saída assíncrona do banco de registradores para ser a saída da RAM
+    saida_banco <= s_saida_banco;
+    -- Saída do acumulador para a entrada da RAM 
+    saida_acumulador <= s_saida_acc;
+    
     -- Banco de Registradores
     banco: bancoRegs16bits port map (
         clk => clk, rst => rst, wr_en => wr_en_banco, 
@@ -93,7 +103,7 @@ begin
         data_out => s_saida_acc
     );
 
-    --ULA
+    -- ULA
     ula_inst: ula port map (
         entr0 => s_saida_acc,
         entr1 => s_entr1_ula,

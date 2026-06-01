@@ -12,6 +12,7 @@ ghdl -a src/reg16bits.vhd
 ghdl -a src/maquinaEstados.vhd
 ghdl -a src/pc.vhd
 ghdl -a src/rom.vhd
+ghdl -a src/ram.vhd
 
 echo "Analisando blocos intermediários..."
 ghdl -a src/bancoRegs16bits.vhd 

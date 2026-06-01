@@ -16,8 +16,11 @@ entity uc is
          sel_reg_wr    : out unsigned(2 downto 0); -- para selecionar o registrador de escrita no banco
          sel_reg_r1    : out unsigned(2 downto 0); -- para selecionar o registrador de leitura 1 no banco
          sel_mux_ula   : out std_logic; -- para selecionar a entrada da ULA (0: banco, 1: constante)
-         sel_mux_data  : out std_logic; -- para selecionar o dado a ser escrito (0: resultado da ULA, 1: constante)
+         sel_mux_data  : out unsigned(1 downto 0); -- para selecionar o dado a ser escrito (0: resultado da ULA, 1: constante)
         
+         wr_en_ram     : out std_logic; -- para controlar a escrita na RAM
+
+
          N_in : in std_logic; -- para receber a flag N da ULA    
          C_in : in std_logic; -- para receber a flag C da ULA
          Z_in : in std_logic; -- para receber a flag Z da ULA
@@ -159,7 +162,7 @@ begin
     constante_out <= ext_cte; -- para passar a constante estendida para o top_level
 
     -- Entrada do PC: Se for JMP no estado 2, faz o salto relativo compensando o +1 anterior pq
-    -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao vlta 1(-1) e pula o +4
+    -- de PC(2) pula +4 mas como no estado 0 vai para PC 3, entao volta 1(-1) e pula o +4
     -- Caso contrário, prepara o PC + 1. ( pela logica do PC+1 gravado entre o primeiro e segundo estado)
     s_pc_in <= (s_pc_out - 1 + ext_jmp) when (opcode = "1111" and s_estado = "10") else
                ("00000" & s_instrucao(10 downto 0)) when ((opcode = "1001" or opcode = "1010") and s_estado = "10") else 
@@ -170,19 +173,24 @@ begin
                   '1' when (s_estado = "10" and s_condicao_atendida = '1') else
                   '0';
 
-    -- Habilitação de escrita no banco: LD e MOV Rd,A
-    wr_en_banco <= '1' when (s_estado = "10") and (opcode = "0001" or opcode = "0100") else '0';
+    
+    -- Habilitação de escrita no banco: LD, MOV Rd, A e LW (Leitura da RAM)
+    wr_en_banco <= '1' when (s_estado = "10") and (opcode = "0001" or opcode = "0100" or opcode = "1011") else '0';
 
     -- Habilitação de escrita no acumulador: MOV A, Rs; ADD A, Rs; SUBI A, cte
     wr_en_acc <= '1' when (s_estado = "10") and (opcode = "0011" or opcode = "0101" or opcode = "0110" or opcode = "0111") else '0';
-
+   
+    -- Habilita escrita na RAM (apenas no estado de Execute)
+    wr_en_ram <= '1' when (s_estado = "10" and opcode = "1100") else '0';
     -- Selecao ULA
     sel_operacao <= "001" when (opcode = "0110" or opcode = "1001" or opcode = "1010") else -- SUBI, BLT e BHI
                     "100" when opcode = "0011" else -- MOV A, Rs (Usa o "byPass" da entr1)
                     "000"; -- Padrao (ADD). O MOV Rd, A (0100) vai cair aqui pra somar com 0, ADDI(0111) também cai aqui somando com a cte. que vem na entr1.
                     
     -- MUX Data
-    sel_mux_data <= '1' when opcode = "0001" else '0'; -- Nao escreve caso seja BHI ou BLT 
+   sel_mux_data <= "10" when opcode = "1011" else -- LW (Dado da RAM)
+                   "01" when opcode = "0001" else -- LD (Constante)
+                   "00";                          -- Padrão (ULA)
 
     -- MUX ULA
     sel_mux_ula <= '1' when (opcode = "0110" or opcode = "0100" or opcode = "0111") else '0'; -- Nao escreve caso seja BHI ou BLT 

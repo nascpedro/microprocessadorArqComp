@@ -5,7 +5,7 @@ ISA lab5:
      EX: ------1111--------------XXX--------------YYY---------------ZZZZZ------
      
     
-TABELA OPCODE: 
+TABELA OPCODES: 
 
 -> 0001: LD Rd, cte (Carrega cte. direta no reg. [Rd])
 -> 0011: MOV A, Rs (Copia o valor de [Rs] para o Acumulador)
@@ -14,7 +14,7 @@ TABELA OPCODE:
 -> 0110: SUBI A, cte (Subtrai A cte. do Acumulador)
 -> 0111: ADDI A, cte (Soma A cte. do acumulador)
 -> 1111: JMP relativo (Jump do Lab 4)
-
 -> 1001: BHI R, A, destino (Branch Higher)
 -> 1010: BLT R, A, destino (Branch Lower)
-   
+-> 1011: LW Rd, (Rs) (Lê dado da RAM no endereço [Rs] e salva em Rd)
+-> 1100: SW A, (Rs)  (Escreve o valor do Acumulador na RAM no endereço [Rs])

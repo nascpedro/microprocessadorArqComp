@@ -1,0 +1,40 @@
+-- PASSO 1: Preparação dos ponteiros de endereço (Registradores R0, R1, R2)
+LD R0, 10      -- Ponteiro 1 aponta para RAM[10]
+LD R1, 20      -- Ponteiro 2 aponta para RAM[20]
+LD R2, 30      -- Ponteiro 3 aponta para RAM[30]
+
+-- PASSO 2: Escritas com dados variados na RAM
+LD R3, 5       -- Carrega o dado 5
+MOV A, R3      -- Move para o Acumulador
+SW A, (R0)     -- Grava 5 na RAM[10]
+
+LD R4, 15      -- Carrega o dado 15
+MOV A, R4      -- Move para o Acumulador
+SW A, (R1)     -- Grava 15 na RAM[20]
+
+LD R5, 25      -- Carrega o dado 25
+MOV A, R5      -- Move para o Acumulador
+SW A, (R2)     -- Grava 25 na RAM[30]
+
+-- PASSO 3: Zerando registradores e acumuladores
+LD R3, 0       -- Zera o R3
+MOV A, R3      -- Zera o Acumulador
+MOV R4, A      -- Zera o R4
+MOV R5, A      -- Zera o R5
+
+-- PASSO 4: Leituras (Recuperar dados da RAM)
+LW R3, (R0)    -- Lê da RAM[10] (Deve restaurar o 5)
+LW R4, (R1)    -- Lê da RAM[20] (Deve restaurar o 15)
+LW R5, (R2)    -- Lê da RAM[30] (Deve restaurar o 25)
+
+-- PASSO 5: Aritmética com os valores agora nos registradores
+MOV A, R3      -- Acumulador = 5
+ADD A, R4      -- Acumulador = 5 + 15 = 20
+ADD A, R5      -- Acumulador = 20 + 25 = 45
+
+-- PASSO 6: (R7 = 0)
+LD R7, 31      -- Tenta injetar o valor máximo (31) no Registo 7
+ADD A, R7      -- Soma o R7 ao Acumulador. Sendo GND, soma 0. Acumulador mantém-se em 45.
+
+-- PASSO 7: Travar Execução
+JMP 0          -- Loop infinito na linha atual
