@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 entity rom is
    port( clk      : in std_logic;
-         endereco : in unsigned(6 downto 0);
+         endereco : in unsigned(5 downto 0);
          dado     : out unsigned(14 downto 0) 
    );
 end entity;
@@ -44,12 +44,8 @@ architecture a_rom of rom is
         20 => "010100010000000", -- ADD A, R4   (A = 5 + 15 = 20)
         21 => "010100010100000", -- ADD A, R5   (A = 20 + 25 = 45)
 
-        -- PASSO 6: O Teste do "Buraco Negro" (Prova de R7 = GND)
-        22 => "000111100011111", -- LD R7, 31   (Tenta forcar o valor 31 no R7)
-        23 => "010100011100000", -- ADD A, R7   (Soma R7 ao Acc. Se R7 = 0, Acc continua 45)
-
-        -- PASSO 7: Travar PC
-        24 => "111100000000000", -- JMP 0 (Fica preso no 24)
+        -- PASSO 6: Travar PC
+        22 => "111100000000000", -- JMP 0 (Fica preso no 24)
         
         others => (others => '0')
     );
