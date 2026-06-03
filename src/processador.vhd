@@ -53,7 +53,7 @@ architecture a_processador of processador is
 
     component ram is
         port( clk      : in std_logic;
-              endereco : in unsigned(6 downto 0);
+              endereco : in unsigned(5 downto 0);
               wr_en    : in std_logic;
               dado_in  : in unsigned(15 downto 0);
               dado_out : out unsigned(15 downto 0)
@@ -122,7 +122,7 @@ begin
 
     inst_ram: ram port map (
         clk      => clk,
-        endereco => s_endereco_ram(6 downto 0), -- Fatiamento para 7 bits
+        endereco => s_endereco_ram(5 downto 0), -- Fatiamento para 7 bits
         wr_en    => s_wr_en_ram,
         dado_in  => s_dado_in_ram,
         dado_out => s_dado_out_ram
