@@ -40,7 +40,7 @@ architecture a_uc of uc is
 
     component rom is
         port( clk      : in std_logic;
-              endereco : in unsigned(6 downto 0);
+              endereco : in unsigned(5 downto 0);
               dado     : out unsigned(14 downto 0) 
         );
     end component;
@@ -212,7 +212,7 @@ begin
 
     rom1: rom port map (
         clk      => clk,
-        endereco => s_pc_out(6 downto 0), 
+        endereco => s_pc_out(5 downto 0), 
         dado     => s_saida_rom
     );
 
