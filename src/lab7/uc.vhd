@@ -77,6 +77,9 @@ architecture a_uc of uc is
     signal s_condicao_atendida : std_logic;
 
 begin
+
+    -- Habilita escrita das flags apenas no estado de execução de operações da ula
+    s_wr_flags <= '1' when (s_estado = "10" and (opcode = "0101" or opcode = "0110" or opcode = "0111")) else '0';
     -- ir: registrador de instrução. Atualiza no estado 1, lendo direto da ROM (pois o PC ainda não atualizou)
     -- Conforme sorteio: wr_en no segundo estado (s_estado = '1')
     process(clk, rst)
@@ -174,29 +177,24 @@ begin
     -- Habilitação de escrita no banco: LD, MOV Rd, A e LW (Leitura da RAM)
     wr_en_banco <= '1' when (s_estado = "10") and (opcode = "0001" or opcode = "0100" or opcode = "1011") else '0';
 
-    -- Habilitação de escrita no acumulador: MOV A, Rs; ADD A, Rs; SUB A, Rs; SUBI A, cte; ADDI A, cte
-    wr_en_acc <= '1' when (s_estado = "10") and (opcode = "0011" or opcode = "0101" or opcode = "0110" or opcode = "1000" or opcode = "0111") else '0';
+    -- Habilitação de escrita no acumulador: MOV A, Rs; ADD A, Rs; SUBI A, cte
+    wr_en_acc <= '1' when (s_estado = "10") and (opcode = "0011" or opcode = "0101" or opcode = "0110" or opcode = "0111") else '0';
    
     -- Habilita escrita na RAM (apenas no estado de Execute)
     wr_en_ram <= '1' when (s_estado = "10" and opcode = "1100") else '0';
-
     -- Selecao ULA
-    sel_operacao <= "101" when opcode = "1110" else --SLR   
-                    "001" when (opcode = "1000" or opcode = "0110" or opcode = "0010" or opcode = "1101" or opcode = "1001" or opcode = "1010") else -- SUB, SUBI, CMP, CMPI, BHI, BLT (Subtrações)
+    sel_operacao <= "001" when (opcode = "0110" or opcode = "1001" or opcode = "1010") else -- SUBI, BLT e BHI
                     "100" when opcode = "0011" else -- MOV A, Rs (Usa o "byPass" da entr1)
-                    "000"; -- Padrao (ADD). O MOV Rd, A (0100) vai cair aqui pra somar A+0, ADDI (0111) soma com cte.
+                    "000"; -- Padrao (ADD). O MOV Rd, A (0100) vai cair aqui pra somar com 0, ADDI(0111) também cai aqui somando com a cte. que vem na entr1.
                     
-    -- MUX Data (O que vai para a entrada do Banco de Registradores)
-    sel_mux_data <= "10" when opcode = "1011" else -- LW (Dado da RAM)
-                    "01" when opcode = "0001" else -- LD (Constante)
-                    "00";                          -- Padrão (Saída da ULA)
+    -- MUX Data
+   sel_mux_data <= "10" when opcode = "1011" else -- LW (Dado da RAM)
+                   "01" when opcode = "0001" else -- LD (Constante)
+                   "00";                          -- Padrão (ULA)
 
-    -- MUX ULA (Seleciona a Constante estendida para a entrada 2 da ULA)
-    sel_mux_ula  <= '1' when (opcode = "0110" or opcode = "0111" or opcode = "1101" or opcode = "0100") else '0'; 
-    -- Adicionado o 1101 (CMPI) aqui! O 0100 (MOV Rd, A) usa cte zerada.
+    -- MUX ULA
+    sel_mux_ula <= '1' when (opcode = "0110" or opcode = "0100" or opcode = "0111") else '0'; -- Nao escreve caso seja BHI ou BLT 
 
-    -- Gravação das Flags (Ativa em operações aritméticas e comparações)
-    wr_en_flags  <= '1' when (s_estado = "10") and (opcode = "0101" or opcode = "0111" or opcode = "0110" or opcode = "1000" or opcode = "0010" or opcode = "1101") else '0';
     
     maquinaEstados1 : maquinaEstados port map (
         clk    => clk,

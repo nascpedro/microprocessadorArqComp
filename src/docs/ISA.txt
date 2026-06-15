@@ -7,14 +7,20 @@ ISA lab5:
     
 TABELA OPCODES: 
 
--> 0001: LD Rd, cte (Carrega cte. direta no reg. [Rd])
--> 0011: MOV A, Rs (Copia o valor de [Rs] para o Acumulador)
--> 0100: MOV Rd, A (Copia o Acumulador para o reg. [Rd])
--> 0101: ADD A, Rs (Soma [Rs] com o Acumulador)
--> 0110: SUBI A, cte (Subtrai A cte. do Acumulador)
--> 0111: ADDI A, cte (Soma A cte. do acumulador)
--> 1111: JMP relativo (Jump do Lab 4)
--> 1001: BHI R, A, destino (Branch Higher)
--> 1010: BLT R, A, destino (Branch Lower)
--> 1011: LW Rd, (Rs) (Lê dado da RAM no endereço [Rs] e salva em Rd)
--> 1100: SW A, (Rs)  (Escreve o valor do Acumulador na RAM no endereço [Rs])
+-> 0001:	LD   Rd, cte	Carrega cte. direta no reg. [Rd]
+-> 0011:	MOV  A, Rs	Copia o valor de [Rs] para o Acumulador
+-> 0100:	MOV  Rd, A	Copia o Acumulador para o reg. [Rd]
+-> 0101:	ADD  A, Rs	Soma [Rs] com o Acumulador
+-> 0110:	SUBI A, cte	Subtrai a cte. do Acumulador
+-> 0111:	ADDI A, cte	Soma a cte. ao Acumulador
+-> 1000:	SUB  A, Rs	Subtrai [Rs] do Acumulador 
+-> 1001:	BHI	Branch Higher Immediate (Salto condicional) -absoluto
+-> 1010:	BLT	Branch Lower  (Salto condicional) -abstoluto
+-> 1011:	LW   Rd, (Rs)	Lê dado da RAM no endereço [Rs] -> Rd
+-> 1100:	SW   A, (Rs)	Escreve Acumulador na RAM no endereço [Rs]
+-> 0010:	CMP  A, Rs	Compara A com [Rs] alterando Flags 
+-> 1101:	CMPI A, cte	Compara A com cte. alterando Flags 
+-> 1111:	JMP	Jump  (Salto incondicional) -relativo
+-> 1110:  SLR A, Rs, 5 (shift left register) 
+TODO: SLR de verdade
+      Exceção RAM ou ROM

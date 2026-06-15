@@ -1,0 +1,81 @@
+-- 1. SETUP: PREENCHER RAM[2] a RAM[31] COM SEUS PRÓPRIOS VALORES
+        LD R1, 2       -- R1 é o contador/ponteiro inicial
+LOOP_INIT:
+        MOV A, R1      
+        SW A, (R1)     -- Grava o valor na RAM (ex: RAM[2] = 2)
+        
+        ADDI A, 1      -- Incrementa ponteiro
+        MOV R1, A      
+        
+        -- TESTE DE PARADA COM SLR (Limiar de 32 / bit 5)
+        SLR A, R1      -- Shift Right 5 embutido no hardware. Se R1 < 32, A = 0. Se R1 >= 32, A > 0.
+        CMPI A, 0      -- Compara o resultado com 0
+        BHI FIM_INIT   -- Se A > 0 (chegou no 32), SAI DO LOOP pulando para FIM_INIT
+        JMP LOOP_INIT  -- Se A == 0, o BHI falha, e o JMP incondicional repete o loop
+FIM_INIT:
+
+-- 2. CRIVO DO 2 (Apagar os múltiplos de 2)
+        LD R1, 4       -- Começa no primeiro múltiplo (4)
+        LD R0, 0       -- R0 será nossa borracha (valor 0)
+LOOP_DOIS:
+        MOV A, R0      
+        SW A, (R1)     -- RAM[R1] = 0 (Apaga o não-primo)
+        
+        MOV A, R1
+        ADDI A, 2      -- O Pulo do Gato: Avança de 2 em 2! (4, 6, 8...)
+        MOV R1, A
+        
+        SLR A, R1
+        CMPI A, 0
+        BHI FIM_DOIS
+        JMP LOOP_DOIS
+FIM_DOIS:
+
+-- 3. CRIVO DO 3 (Apagar os múltiplos de 3)
+        LD R1, 6       -- Começa no primeiro múltiplo (6)
+LOOP_TRES:
+        MOV A, R0      -- R0 ainda guarda 0
+        SW A, (R1)     
+        
+        MOV A, R1
+        ADDI A, 3      -- Avança de 3 em 3! (6, 9, 12...)
+        MOV R1, A
+        
+        SLR A, R1
+        CMPI A, 0
+        BHI FIM_TRES
+        JMP LOOP_TRES
+FIM_TRES:
+
+-- 4. CRIVO DO 5 (Apagar os múltiplos de 5)
+        LD R1, 10      -- Começa no primeiro múltiplo (10)
+LOOP_CINCO:
+        MOV A, R0      
+        SW A, (R1)     
+        
+        MOV A, R1
+        ADDI A, 5      -- Avança de 5 em 5!
+        MOV R1, A
+        
+        SLR A, R1
+        CMPI A, 0
+        BHI FIM_CINCO
+        JMP LOOP_CINCO
+FIM_CINCO:
+
+-- 5. EXIBIR PRIMOS NA ULA (Ler RAM[2] a RAM[31])
+        LD R1, 2       -- Volta ponteiro para o início
+LOOP_EXIBE:
+        LW R2, (R1)    -- Lê a RAM no endereço atual
+        MOV A, R2      -- Move para o Acumulador (Neste exato ciclo, o valor aparece na ULA!)
+        
+        MOV A, R1
+        ADDI A, 1      -- Próximo endereço
+        MOV R1, A
+        
+        SLR A, R1
+        CMPI A, 0
+        BHI HALT       -- Se bateu no 32, termina o programa
+        JMP LOOP_EXIBE
+HALT:
+        JMP 0          -- Trava o PC em loop infinito
