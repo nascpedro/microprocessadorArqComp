@@ -13,20 +13,20 @@
 -- 3. TESTE DE COMPARAÇÃO, FLAGS E DESVIOS 
 08: CMPI A, 10      -- Compara 5 com 10 (N=1)
 09: BLT 11          -- SALTO ABSOLUTO: Pula direto para a linha 11
-10: LD R3, 31       -- (Linha fantasma: será ignorada se BLT funcionar)
+10: LD R3, 31       -- (será ignorada se BLT funcionar)
 
-11: LD R4, 1        -- (Label: SALTO_BLT)
+11: LD R4, 1        
 12: MOV A, R1       -- A = 4
 13: CMP A, R4       -- Compara 4 com 1 (Z=0, C=0)
 14: BHI 16          -- SALTO ABSOLUTO: Pula direto para a linha 16
-15: LD R3, 31       -- (Linha fantasma: será ignorada se BHI funcionar)
+15: LD R3, 31       -- (será ignorada se BHI funcionar)
 
 -- 4. TESTE DA INSTRUÇÃO CUSTOMIZADA (SLR) 
-16: LD R1, 16       -- (Label: SALTO_BHI) Carrega 16
+16: LD R1, 16       -- Carrega 16
 17: MOV A, R1       
 18: ADDI A, 16      -- 16 + 16 = 32
-19: MOV R1, A       -- R1 agora vale 32 de forma segura!
-20: SLR A, R1       -- Hardware tritura 5 bits para a direita (A vira 1)
+19: MOV R1, A       -- R1 agora vale 32 
+20: SLR A, R1       -- shit 5 bits para a direita (A vira 1)
 
 -- 5. TESTE DE MEMÓRIA RAM (SW, LW) 
 21: LD R0, 10       -- Ponteiro da RAM = 10

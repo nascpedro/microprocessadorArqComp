@@ -75,7 +75,7 @@ architecture a_rom of rom is
         
         -- finaliza o programa
         50 => "111100000000000", -- JMP 0          (Relativo -> Trava PC infinitamente)
-        others => "000000000000000" -- NOP
+        others => "000000000000000" 
     );
 
 begin
