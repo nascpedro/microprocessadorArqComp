@@ -22,5 +22,3 @@ TABELA OPCODES:
 -> 1101:	CMPI A, cte	Compara A com cte. alterando Flags 
 -> 1111:	JMP	Jump  (Salto incondicional) -relativo
 -> 1110:  SLR A, Rs, 5 (shift left register) 
-TODO: SLR de verdade
-      Exceção RAM ou ROM

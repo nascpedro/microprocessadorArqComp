@@ -1,28 +1,28 @@
--- 1. SETUP: PREENCHER RAM[2] a RAM[31] COM SEUS PRÓPRIOS VALORES
+--preenchemos os enderecos da RAM[2] a RAM[31] com 1 a 31, respectivamente.
         LD R1, 2       -- R1 é o contador/ponteiro inicial
-LOOP_INIT:
+LOOP_INICIALIZACAO:
         MOV A, R1      
-        SW A, (R1)     -- Grava o valor na RAM (ex: RAM[2] = 2)
+        SW A, (R1)     -- Grava o valor na RAM 
         
         ADDI A, 1      -- Incrementa ponteiro
         MOV R1, A      
         
-        -- TESTE DE PARADA COM SLR (Limiar de 32 / bit 5)
-        SLR A, R1      -- Shift Right 5 embutido no hardware. Se R1 < 32, A = 0. Se R1 >= 32, A > 0.
+        -- fim do loop com SLR
+        SLR A, R1      -- Se R1 < 32, A = 0. Se R1 >= 32, A > 0.
         CMPI A, 0      -- Compara o resultado com 0
-        BHI FIM_INIT   -- Se A > 0 (chegou no 32), SAI DO LOOP pulando para FIM_INIT
-        JMP LOOP_INIT  -- Se A == 0, o BHI falha, e o JMP incondicional repete o loop
-FIM_INIT:
+        BHI FIM_INICIALIZACAO   -- Se A > 0 (chegou no 32), sai do loop pulando para FIM_INICIALIZACAO
+        JMP LOOP_INICIALIZACAO  -- Se A == 0, repete o loop
+FIM_INICIALIZACAO:
 
--- 2. CRIVO DO 2 (Apagar os múltiplos de 2)
+-- crivo do 2
         LD R1, 4       -- Começa no primeiro múltiplo (4)
-        LD R0, 0       -- R0 será nossa borracha (valor 0)
+        LD R0, 0       -- R0 fixo em zero para zerar valores
 LOOP_DOIS:
         MOV A, R0      
         SW A, (R1)     -- RAM[R1] = 0 (Apaga o não-primo)
         
         MOV A, R1
-        ADDI A, 2      -- O Pulo do Gato: Avança de 2 em 2! (4, 6, 8...)
+        ADDI A, 2      -- Avança de 2 em 2
         MOV R1, A
         
         SLR A, R1
@@ -31,14 +31,14 @@ LOOP_DOIS:
         JMP LOOP_DOIS
 FIM_DOIS:
 
--- 3. CRIVO DO 3 (Apagar os múltiplos de 3)
+-- crivo do 3
         LD R1, 6       -- Começa no primeiro múltiplo (6)
 LOOP_TRES:
         MOV A, R0      -- R0 ainda guarda 0
         SW A, (R1)     
         
         MOV A, R1
-        ADDI A, 3      -- Avança de 3 em 3! (6, 9, 12...)
+        ADDI A, 3      -- Avança de 3 em 3
         MOV R1, A
         
         SLR A, R1
@@ -47,14 +47,14 @@ LOOP_TRES:
         JMP LOOP_TRES
 FIM_TRES:
 
--- 4. CRIVO DO 5 (Apagar os múltiplos de 5)
+-- crivo do 5
         LD R1, 10      -- Começa no primeiro múltiplo (10)
 LOOP_CINCO:
         MOV A, R0      
         SW A, (R1)     
         
         MOV A, R1
-        ADDI A, 5      -- Avança de 5 em 5!
+        ADDI A, 5      -- Avança de 5 em 5
         MOV R1, A
         
         SLR A, R1
@@ -63,11 +63,11 @@ LOOP_CINCO:
         JMP LOOP_CINCO
 FIM_CINCO:
 
--- 5. EXIBIR PRIMOS NA ULA (Ler RAM[2] a RAM[31])
+-- exibe os primos encontrados
         LD R1, 2       -- Volta ponteiro para o início
 LOOP_EXIBE:
         LW R2, (R1)    -- Lê a RAM no endereço atual
-        MOV A, R2      -- Move para o Acumulador (Neste exato ciclo, o valor aparece na ULA!)
+        MOV A, R2      -- Move para o Acumulador para vermos pela ULA
         
         MOV A, R1
         ADDI A, 1      -- Próximo endereço
@@ -75,7 +75,7 @@ LOOP_EXIBE:
         
         SLR A, R1
         CMPI A, 0
-        BHI HALT       -- Se bateu no 32, termina o programa
+        BHI FIM      -- Se bateu no 32, termina o programa
         JMP LOOP_EXIBE
-HALT:
+FIM:
         JMP 0          -- Trava o PC em loop infinito

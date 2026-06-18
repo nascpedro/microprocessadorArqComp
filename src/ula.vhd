@@ -19,7 +19,7 @@ architecture a_ula of ula is
     signal s_soma, s_subt, s_mult, s_and       : unsigned(15 downto 0);
     signal s_resultado_final                   : unsigned(15 downto 0);
     signal s_byPass                            : unsigned(15 downto 0); -- para passar o valor direto, EX: MOV A, Rs
-
+    signal s_ShiftRight                       : unsigned(15 downto 0); -- para shift right
 begin
     s_soma <= entr0 + entr1;
     s_subt <= entr0 - entr1;
@@ -27,14 +27,14 @@ begin
     s_mult <= s_mult_32(15 downto 0);--slicing para os 15 LSB
     s_and  <= entr0 and entr1; 
     s_byPass <= entr1; -- op. para passar o valor direto, EX: MOV A, Rs
-    s_leftShift <= entr1(10 downto 0) & "00000"; --op. para shift left 
+    s_ShiftRight <= "00000" & entr0(15 downto 5); --op. para shift right
 
     s_resultado_final <= s_soma   when sel_operacao  = "000"  else
                          s_subt   when sel_operacao  = "001"  else
                          s_mult   when sel_operacao  = "010"  else
                          s_and    when sel_operacao  = "011"  else
                          s_byPass when sel_operacao = "100" else
-                         s_leftShift when sel_operacao = "101" else
+                         s_ShiftRight when sel_operacao = "101" else
                          "0000000000000000";
 
     saida <= s_resultado_final;

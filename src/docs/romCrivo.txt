@@ -1,6 +1,3 @@
--- A rom do crivo e da validaçao estão em txt para que sejam substituídos aqui de acordo.
--- nesse programa, estamos usando a rom do crivo. Para usar a rom da validação, basta substituir o conteúdo dessse arquivo com o conteúdo da rom da validação em txt.
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

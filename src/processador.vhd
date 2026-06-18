@@ -4,7 +4,8 @@ use ieee.numeric_std.all;
 
 entity processador is
     port( clk : in std_logic;
-          rst : in std_logic
+          rst : in std_logic;
+          exception : out std_logic
     );
 end entity;
 
@@ -26,7 +27,8 @@ architecture a_processador of processador is
              N_in          : in std_logic;
              C_in          : in std_logic;
              Z_in          : in std_logic;
-             V_in          : in std_logic
+             V_in          : in std_logic;
+             exc_ram_in    : in std_logic                 -- [CORREÇÃO] Devolvido para travar a UC
        );
     end component;
 
@@ -81,7 +83,13 @@ architecture a_processador of processador is
     signal s_dado_out_ram : unsigned(15 downto 0); -- Saída do RAM 
     signal s_wr_en_ram    : std_logic := '0';      -- Controle de escrita da RAM
 
+    -- Sinal para indicar exceção de endereço inválido da RAM
+    signal s_exc_ram      : std_logic;
+
 begin
+    -- Deteccao de excecao de endereco invalido da RAM (Leitura ou Escrita)
+    s_exc_ram <= '1' when (s_endereco_ram > 63) and (s_wr_en_ram = '1' or w_m_data = "10") else '0';
+
     inst_uc: uc port map (
         clk           => clk, 
         rst           => rst, 
@@ -97,7 +105,8 @@ begin
         N_in          => s_flag_N,
         C_in          => s_flag_C,
         Z_in          => s_flag_Z,
-        V_in          => s_flag_V
+        V_in          => s_flag_V,
+        exc_ram_in    => s_exc_ram    -- uc recebe a informação de exceção da RAM para para a execução
     );
 
     inst_dp: top_level port map (
@@ -122,10 +131,12 @@ begin
 
     inst_ram: ram port map (
         clk      => clk,
-        endereco => s_endereco_ram(5 downto 0), -- Fatiamento para 7 bits
+        endereco => s_endereco_ram(5 downto 0),
         wr_en    => s_wr_en_ram,
         dado_in  => s_dado_in_ram,
         dado_out => s_dado_out_ram
     );
 
+    -- Exceção de endereço inválido da RAM
+    exception <= s_exc_ram;
 end architecture;

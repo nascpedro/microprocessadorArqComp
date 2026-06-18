@@ -1,0 +1,64 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity rom_teste is
+    port( 
+        clk      : in std_logic;
+        endereco : in unsigned(5 downto 0); -- 64 posicoes
+        dado     : out unsigned(14 downto 0) 
+    );
+end entity;
+
+architecture a_rom of rom_teste is
+    type mem_t is array(0 to 63) of unsigned(14 downto 0);
+    signal s_rom : mem_t := (
+        -- 1. CARGAS E MOVIMENTAÇÃO
+        0  => "000100100000100", -- LD R1, 4
+        1  => "000101000000010", -- LD R2, 2
+        2  => "001100000100000", -- MOV A, R1
+        3  => "010001100000000", -- MOV R3, A
+        
+        -- 2. OPERAÇÕES ARITMÉTICAS
+        4  => "010100001000000", -- ADD A, R2
+        5  => "011100000000100", -- ADDI A, 4
+        6  => "100000001000000", -- SUB A, R2
+        7  => "011000000000011", -- SUBI A, 3
+        
+        -- 3. TESTE DE COMPARAÇÃO E DESVIOS
+        8  => "110100000001010", -- CMPI A, 10
+        9  => "101000000001011", -- BLT 11 (Salto absoluto)
+        10 => "000101100011111", -- LD R3, 31 (Linha ignorada)
+        11 => "000110000000001", -- LD R4, 1 (Alvo do BLT)
+        12 => "001100000100000", -- MOV A, R1
+        13 => "001000010000000", -- CMP A, R4
+        14 => "100100000010000", -- BHI 16 (Salto absoluto)
+        15 => "000101100011111", -- LD R3, 31 (Linha ignorada)
+        
+        -- 4. CONSTRUÇÃO DO 32 E TESTE DO SLR
+        16 => "000100100010000", -- LD R1, 16 (Alvo do BHI)
+        17 => "001100000100000", -- MOV A, R1
+        18 => "011100000010000", -- ADDI A, 16 (Acumulador agora tem 32)
+        19 => "010000100000000", -- MOV R1, A
+        20 => "111000000100000", -- SLR A, R1
+        
+        -- 5. TESTE DE MEMÓRIA (SW, LW)
+        21 => "000100000001010", -- LD R0, 10
+        22 => "110000000000000", -- SW A, (R0)
+        23 => "000101100000000", -- LD R3, 0
+        24 => "101101100000000", -- LW R3, (R0)
+        
+        -- 6. FINALIZAÇÃO
+        25 => "111100000000000", -- JMP 0 (Loop infinito simulando HALT)
+        others => "000000000000000" -- Preenche o resto com NOP (0x0)
+    );
+
+begin
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            dado <= s_rom(to_integer(endereco));
+        end if;
+    end process;
+
+end architecture;

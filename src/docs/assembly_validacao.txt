@@ -1,0 +1,38 @@
+-- 1. CARGA DE CONSTANTES (LD) E MOVIMENTAÇÃO 
+00: LD R1, 4        
+01: LD R2, 2        
+02: MOV A, R1       
+03: MOV R3, A       
+
+-- 2. OPERAÇÕES ARITMÉTICAS DA ULA (ADD, ADDI, SUB, SUBI) 
+04: ADD A, R2       -- A = 4 + 2 = 6
+05: ADDI A, 4       -- A = 6 + 4 = 10
+06: SUB A, R2       -- A = 10 - 2 = 8
+07: SUBI A, 3       -- A = 8 - 3 = 5
+
+-- 3. TESTE DE COMPARAÇÃO, FLAGS E DESVIOS 
+08: CMPI A, 10      -- Compara 5 com 10 (N=1)
+09: BLT 11          -- SALTO ABSOLUTO: Pula direto para a linha 11
+10: LD R3, 31       -- (Linha fantasma: será ignorada se BLT funcionar)
+
+11: LD R4, 1        -- (Label: SALTO_BLT)
+12: MOV A, R1       -- A = 4
+13: CMP A, R4       -- Compara 4 com 1 (Z=0, C=0)
+14: BHI 16          -- SALTO ABSOLUTO: Pula direto para a linha 16
+15: LD R3, 31       -- (Linha fantasma: será ignorada se BHI funcionar)
+
+-- 4. TESTE DA INSTRUÇÃO CUSTOMIZADA (SLR) 
+16: LD R1, 16       -- (Label: SALTO_BHI) Carrega 16
+17: MOV A, R1       
+18: ADDI A, 16      -- 16 + 16 = 32
+19: MOV R1, A       -- R1 agora vale 32 de forma segura!
+20: SLR A, R1       -- Hardware tritura 5 bits para a direita (A vira 1)
+
+-- 5. TESTE DE MEMÓRIA RAM (SW, LW) 
+21: LD R0, 10       -- Ponteiro da RAM = 10
+22: SW A, (R0)      -- Grava A (1) na RAM[10]
+23: LD R3, 0        -- Zera R3
+24: LW R3, (R0)     -- Lê RAM[10] (R3 vira 1)
+
+-- 6. FINALIZAÇÃO
+25: JMP 0           -- Trava em loop infinito
